@@ -8,7 +8,7 @@ class CustomerListPage extends StatelessWidget {
         title: const Text('Customer List Page'),
       ),
       body: Center(
-        child: const Text('This is the Cheng Z Page'),
+        child: const Text('This is the Cheng Zhang Page'),
       ),
     );
   }
