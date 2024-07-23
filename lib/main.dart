@@ -4,6 +4,8 @@ import 'AirplaneListPage.dart';
 import 'CustomerListPage.dart';
 import 'FlightsListPage.dart';
 import 'ReservationPage.dart';
+import 'orders_page.dart';
+import 'reports_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -70,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => AirplaneListPage()),
                 );
               },
-              child: const Text("Airplane List Page "),
+              child: const Text("Airplane List Page"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -79,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => FlightsListPage()),
                 );
               },
-              child: const Text(" Flights List Page  "),
+              child: const Text("Flights List Page"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -88,8 +90,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => ReservationPage()),
                 );
               },
-
-              child: const Text(" Reservation Page "),
+              child: const Text("Reservation Page"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OrdersPage()),
+                );
+              },
+              child: const Text("Orders Page"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReportsPage()),
+                );
+              },
+              child: const Text("Reports Page"),
             ),
             const Text(
               'You have pushed the button this many times:',
