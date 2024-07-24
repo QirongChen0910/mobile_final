@@ -118,7 +118,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                     return 'Please enter an address';
                   }
                   return null;
-                },
+                },//
               ),
               TextFormField(
                 controller: _birthdayController,

@@ -135,7 +135,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
                     onPressed: _addCustomer,
                     child: Text('Add Customer'),
                   ),
-                ],
+                ],//
               ),
             ),
           ),

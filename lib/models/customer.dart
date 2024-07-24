@@ -11,7 +11,7 @@ class Customer {
     required this.lastName,
     required this.address,
     required this.birthday,
-  });
+  });//
 
   Map<String, dynamic> toMap() {
     return {

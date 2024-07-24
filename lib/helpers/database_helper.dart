@@ -12,7 +12,7 @@ class DatabaseHelper {
     if (_database != null) return _database!;
     _database = await _initDB('customers.db');
     return _database!;
-  }
+  }//
 
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
