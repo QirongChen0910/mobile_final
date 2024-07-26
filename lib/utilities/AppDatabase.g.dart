@@ -104,7 +104,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Customer` (`customerID` INTEGER PRIMARY KEY AUTOINCREMENT, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Flight` (`flightID` TEXT NOT NULL, `departureCity` TEXT NOT NULL, `destination` TEXT NOT NULL, `departureTime` TEXT NOT NULL, `arrivalTime` TEXT NOT NULL, PRIMARY KEY (`flightID`))');
+            'CREATE TABLE IF NOT EXISTS `Flight` (`flightID` INTEGER PRIMARY KEY AUTOINCREMENT, `flightName` TEXT NOT NULL, `departureCity` TEXT NOT NULL, `destination` TEXT NOT NULL, `departureTime` TEXT NOT NULL, `arrivalTime` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -251,6 +251,19 @@ class _$FlightDAO extends FlightDAO {
             'Flight',
             (Flight item) => <String, Object?>{
                   'flightID': item.flightID,
+                  'flightName': item.flightName,
+                  'departureCity': item.departureCity,
+                  'destination': item.destination,
+                  'departureTime': item.departureTime,
+                  'arrivalTime': item.arrivalTime
+                }),
+        _flightUpdateAdapter = UpdateAdapter(
+            database,
+            'Flight',
+            ['flightID'],
+            (Flight item) => <String, Object?>{
+                  'flightID': item.flightID,
+                  'flightName': item.flightName,
                   'departureCity': item.departureCity,
                   'destination': item.destination,
                   'departureTime': item.departureTime,
@@ -262,6 +275,7 @@ class _$FlightDAO extends FlightDAO {
             ['flightID'],
             (Flight item) => <String, Object?>{
                   'flightID': item.flightID,
+                  'flightName': item.flightName,
                   'departureCity': item.departureCity,
                   'destination': item.destination,
                   'departureTime': item.departureTime,
@@ -276,22 +290,30 @@ class _$FlightDAO extends FlightDAO {
 
   final InsertionAdapter<Flight> _flightInsertionAdapter;
 
+  final UpdateAdapter<Flight> _flightUpdateAdapter;
+
   final DeletionAdapter<Flight> _flightDeletionAdapter;
 
   @override
   Future<List<Flight>> getAllFlights() async {
     return _queryAdapter.queryList('SELECT * FROM Flight',
         mapper: (Map<String, Object?> row) => Flight(
-            row['flightID'] as String,
+            row['flightName'] as String,
             row['departureCity'] as String,
             row['destination'] as String,
             row['departureTime'] as String,
-            row['arrivalTime'] as String));
+            row['arrivalTime'] as String,
+            flightID: row['flightID'] as int?));
   }
 
   @override
   Future<void> insertFlight(Flight flight) async {
     await _flightInsertionAdapter.insert(flight, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateFlight(Flight flight) async {
+    await _flightUpdateAdapter.update(flight, OnConflictStrategy.abort);
   }
 
   @override

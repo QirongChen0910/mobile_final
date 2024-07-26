@@ -11,4 +11,7 @@ abstract class FlightDAO {
 
   @delete
   Future<void> deleteFlight(Flight flight);
+
+  @update
+  Future<void> updateFlight(Flight flight);
 }
