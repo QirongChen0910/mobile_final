@@ -102,7 +102,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Reservation` (`reservationID` INTEGER PRIMARY KEY AUTOINCREMENT, `reservationName` TEXT NOT NULL, `customerName` TEXT NOT NULL, `flightName` TEXT NOT NULL, `Date` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Customer` (`customerID` INTEGER PRIMARY KEY AUTOINCREMENT, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Customer` (`customerID` INTEGER PRIMARY KEY AUTOINCREMENT, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `address` TEXT NOT NULL, `birthday` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Flight` (`flightID` TEXT NOT NULL, `departureCity` TEXT NOT NULL, `destination` TEXT NOT NULL, `departureTime` TEXT NOT NULL, `arrivalTime` TEXT NOT NULL, PRIMARY KEY (`flightID`))');
 
@@ -200,7 +200,20 @@ class _$CustomerDAO extends CustomerDAO {
             (Customer item) => <String, Object?>{
                   'customerID': item.customerID,
                   'firstName': item.firstName,
-                  'lastName': item.lastName
+                  'lastName': item.lastName,
+                  'address': item.address,
+                  'birthday': item.birthday
+                }),
+        _customerUpdateAdapter = UpdateAdapter(
+            database,
+            'Customer',
+            ['customerID'],
+            (Customer item) => <String, Object?>{
+                  'customerID': item.customerID,
+                  'firstName': item.firstName,
+                  'lastName': item.lastName,
+                  'address': item.address,
+                  'birthday': item.birthday
                 }),
         _customerDeletionAdapter = DeletionAdapter(
             database,
@@ -209,7 +222,9 @@ class _$CustomerDAO extends CustomerDAO {
             (Customer item) => <String, Object?>{
                   'customerID': item.customerID,
                   'firstName': item.firstName,
-                  'lastName': item.lastName
+                  'lastName': item.lastName,
+                  'address': item.address,
+                  'birthday': item.birthday
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -220,19 +235,29 @@ class _$CustomerDAO extends CustomerDAO {
 
   final InsertionAdapter<Customer> _customerInsertionAdapter;
 
+  final UpdateAdapter<Customer> _customerUpdateAdapter;
+
   final DeletionAdapter<Customer> _customerDeletionAdapter;
 
   @override
   Future<List<Customer>> getAllCustomers() async {
     return _queryAdapter.queryList('SELECT * FROM Customer',
         mapper: (Map<String, Object?> row) => Customer(
-            row['firstName'] as String, row['lastName'] as String,
+            row['firstName'] as String,
+            row['lastName'] as String,
+            row['address'] as String,
+            row['birthday'] as String,
             customerID: row['customerID'] as int?));
   }
 
   @override
   Future<void> insertCustomer(Customer customer) async {
     await _customerInsertionAdapter.insert(customer, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateCustomer(Customer customer) async {
+    await _customerUpdateAdapter.update(customer, OnConflictStrategy.abort);
   }
 
   @override
