@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'AirplaneListPage.dart';
-import 'CustomerListPage.dart';
-import 'FlightsListPage.dart';
-import 'ReservationPage.dart';
+import 'pages/AirplaneListPage.dart';
+import 'pages/CustomerListPage.dart';
+import 'pages/FlightsListPage.dart';
+import 'pages/ReservationPage.dart';
 
 void main() {
   runApp(const MyApp());
