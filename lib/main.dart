@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
+
 
 import 'package:mobile_final/pages/AddReservationPage.dart';
 import 'package:mobile_final/pages/AirplaneListPage.dart';
@@ -32,12 +31,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      supportedLocales: [
-        const Locale('en', 'US'),
-        const Locale('zh', 'CN'),
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('zh', 'CN'),
       ],
       locale: _locale,
-      localizationsDelegates: [
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -137,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () => _changeLanguage('en'),
                   child: const Text('English'),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () => _changeLanguage('zh'),
                   child: const Text('中文'),
