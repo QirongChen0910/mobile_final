@@ -1,50 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
 
-import 'pages/AirplaneListPage.dart';
-import 'pages/CustomerListPage.dart';
-import 'pages/FlightsListPage.dart';
-import 'pages/ReservationPage.dart';
+import 'package:mobile_final/pages/AddReservationPage.dart';
+import 'package:mobile_final/pages/AirplaneListPage.dart';
+import 'package:mobile_final/pages/CustomerListPage.dart';
+import 'package:mobile_final/pages/FlightsListPage.dart';
+import 'package:mobile_final/utilities/AppLocalizations.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('en', 'US'); // Default locale
+
+  void _setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('zh', 'CN'),
+      ],
+      locale: _locale,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(
+        title: 'Flutter Demo Home Page',
+        onLocaleChanged: _setLocale,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.title, required this.onLocaleChanged});
 
   final String title;
+  final void Function(Locale) onLocaleChanged;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  void _changeLanguage(String languageCode) {
+    Locale newLocale;
+    if (languageCode == 'en') {
+      newLocale = const Locale('en', 'US');
+    } else if (languageCode == 'zh') {
+      newLocale = const Locale('zh', 'CN');
+    } else {
+      newLocale = const Locale('en', 'US'); // Default to English
+    }
+    widget.onLocaleChanged(newLocale);
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -61,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => CustomerListPage()),
                 );
               },
-              child: const Text("Customer List Page"),
+              child: Text(localizations?.translate('customerListPage') ?? 'Customer List Page'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -70,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => AirplaneListPage()),
                 );
               },
-              child: const Text("Airplane List Page "),
+              child: Text(localizations?.translate('airplaneListPage') ?? 'Airplane List Page'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -79,32 +116,36 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => FlightsListPage()),
                 );
               },
-              child: const Text(" Flights List Page  "),
+              child: Text(localizations?.translate('flightsListPage') ?? 'Flights List Page'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ReservationPage()),
+                  MaterialPageRoute(builder: (context) => AddReservationPage()),
                 );
               },
-
-              child: const Text(" Reservation Page "),
-            ),
-            const Text(
-              'You have pushed the button this many times:',
+              child: Text(localizations?.translate('reservationPage') ?? 'Reservation Page'),
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              localizations?.translate('welcomeMessage') ?? 'Welcome to our app!',
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _changeLanguage('en'),
+                  child: const Text('English'),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () => _changeLanguage('zh'),
+                  child: const Text('中文'),
+                ),
+              ],
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
