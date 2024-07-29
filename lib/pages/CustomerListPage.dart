@@ -34,7 +34,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
   }
 
   Future<void>_initDb()async{
-    final database = await $FloorAppDatabase.databaseBuilder('app_database1.db').build();
+    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
     _customerDAO=database.customerDao;
     _loadPreviousData();
 

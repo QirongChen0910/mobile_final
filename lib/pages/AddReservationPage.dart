@@ -60,14 +60,23 @@ class _AddReservationPageState extends State<AddReservationPage> {
 
   void addReservation() async {
     if (_controller.value.text.isNotEmpty) {
+      // 创建一个新的 Reservation 对象，但不设置 reservationID，因为它是自动生成的
       final newItem = Reservation(_controller.value.text, selectedCustomer!, selectedFlight!, _controllerDate.value.text);
+
+      // 插入新的 Reservation 对象
       await reservationDAO.insertItem(newItem);
+
+      // 获取所有 Reservation 对象，包括新插入的那个
+      final listOfReservations = await reservationDAO.getAllItems();
+
+      // 更新状态以刷新 UI
       setState(() {
-        reservations.add(newItem);
+        reservations = listOfReservations;
         _controller.clear();
       });
     }
   }
+
 
   void removeReservation(Reservation reservation) async {
     await reservationDAO.deleteItem(reservation);
@@ -141,7 +150,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
             },
             items: customers.map((Customer customer) {
               return DropdownMenuItem<String>(
-                value: customer.customerID.toString(),
+                value: '${customer.firstName} ${customer.lastName}',
                 child: Text('${customer.firstName} ${customer.lastName}'),
               );
             }).toList(),
@@ -163,8 +172,8 @@ class _AddReservationPageState extends State<AddReservationPage> {
             },
             items: flights.map((Flight flight) {
               return DropdownMenuItem<String>(
-                value: flight.flightID.toString(),
-                child: Text('${flight.departureCity} to ${flight.destination}'),
+                value: flight.flightName,
+                child: Text(flight.flightName),
               );
             }).toList(),
           ),
@@ -218,10 +227,9 @@ class _AddReservationPageState extends State<AddReservationPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text("ReservationID: ${reservations[rowNum].reservationID}"),
-                    Text("ReservationName: ${reservations[rowNum].reservationName}"),
-                    Text("CustomerName: ${reservations[rowNum].customerName}"),
-                    Text("FlightName: ${reservations[rowNum].flightName}"),
+                    Text("ReservationName:" + reservations[rowNum].reservationName),
+                    Text("CustomerName: " + reservations[rowNum].customerName),
+                    Text("FlightName: " + reservations[rowNum].flightName),
                   ],
                 ),
               );
@@ -243,8 +251,8 @@ class _AddReservationPageState extends State<AddReservationPage> {
         children: [
           Text('Reservation ID: ${selectedReservation?.reservationID}'),
           Text('Reservation Name : ${selectedReservation?.reservationName}'),
-          Text('Customer ID : ${selectedReservation?.customerName}'),
-          Text('Flight ID : ${selectedReservation?.flightName}'),
+          Text('Customer Name : ${selectedReservation?.customerName}'),
+          Text('Flight Name : ${selectedReservation?.flightName}'),
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
