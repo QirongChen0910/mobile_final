@@ -14,6 +14,8 @@
   "reservationName": "预订名称：",
   "customerName": "顾客名称：",
   "flightName": "航班名称：",
+  "departureCity": "出发城市",
+  "destination": "目的地",
   "delete": "删除",
   "saveDataDialogTitle": "保存数据对话框",
   "saveDataDialogMessage": "你想保存页面上的数据吗？",

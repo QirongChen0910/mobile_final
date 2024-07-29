@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: MyHomePage(
-        title: 'Flutter Demo Home Page',
+        title: 'Application Home Page',
         onLocaleChanged: _setLocale,
       ),
     );

@@ -371,7 +371,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReservationDetailsPage(reservation: reservations[rowNum]),
+                        builder: (context) => ReservationDetailsPage(reservation: reservations[rowNum], flightDAO: flightDAO,),
                       ),
                     );
                   } else {
@@ -398,6 +398,14 @@ class _AddReservationPageState extends State<AddReservationPage> {
 
   // Widget for displaying details of the selected reservation
   Widget DetailsPage() {
+    // Find the selected flight from the list of flights
+    Flight? selectedFlightDetails;
+    for (var flight in flights) {
+      if (flight.flightName == selectedReservation?.flightName) {
+        selectedFlightDetails = flight;
+        break;
+      }
+    }
     if (selectedReservation == null) {
       return Center(child: Text(AppLocalizations.of(context)?.translate('noReservation') ?? 'No Reservation'));
     }
@@ -410,6 +418,8 @@ class _AddReservationPageState extends State<AddReservationPage> {
           Text('${AppLocalizations.of(context)?.translate('reservationName') ?? 'Reservation Name'} : ${selectedReservation?.reservationName}'),
           Text('${AppLocalizations.of(context)?.translate('customerName') ?? 'Customer Name'} : ${selectedReservation?.customerName}'),
           Text('${AppLocalizations.of(context)?.translate('flightName') ?? 'Flight Name'} : ${selectedReservation?.flightName}'),
+          Text('${AppLocalizations.of(context)?.translate('departureCity') ?? 'Departure City'} : ${selectedFlightDetails?.departureCity}'),
+          Text('${AppLocalizations.of(context)?.translate('destination') ?? 'Destination'} : ${selectedFlightDetails?.destination}'),
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
@@ -425,15 +435,50 @@ class _AddReservationPageState extends State<AddReservationPage> {
   }
 }
 
-class ReservationDetailsPage extends StatelessWidget {
+class ReservationDetailsPage extends StatefulWidget {
   final Reservation reservation;
+  final FlightDAO flightDAO;
 
-  ReservationDetailsPage({required this.reservation});
+  // Constructor to receive Reservation and FlightDAO instances
+  ReservationDetailsPage({required this.reservation, required this.flightDAO});
+
+  @override
+  _ReservationDetailsPageState createState() => _ReservationDetailsPageState();
+}
+
+class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
+  // Variable to store the details of the selected flight
+  Flight? selectedFlightDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load flight details when the widget is initialized
+    _loadFlightDetails();
+  }
+
+  // Method to fetch flight details from the database
+  Future<void> _loadFlightDetails() async {
+    // Retrieve all flights from the database
+    final flights = await widget.flightDAO.getAllFlights();
+
+    // Find the flight that matches the reservation's flightName
+    for (var flight in flights) {
+      if (flight.flightName == widget.reservation.flightName) {
+        setState(() {
+          // Update the state with the found flight details
+          selectedFlightDetails = flight;
+        });
+        break;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // Title of the app bar
         title: Text(AppLocalizations.of(context)?.translate('reservationDetails') ?? 'Reservation Details'),
       ),
       body: Padding(
@@ -441,11 +486,21 @@ class ReservationDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Reservation ID: ${reservation.reservationID}'),
-            Text('${AppLocalizations.of(context)?.translate('reservationName') ?? 'Reservation Name'} : ${reservation.reservationName}'),
-            Text('${AppLocalizations.of(context)?.translate('customerName') ?? 'Customer Name'} : ${reservation.customerName}'),
-            Text('${AppLocalizations.of(context)?.translate('flightName') ?? 'Flight Name'} : ${reservation.flightName}'),
+            // Display reservation details
+            Text('Reservation ID: ${widget.reservation.reservationID}'),
+            Text('${AppLocalizations.of(context)?.translate('reservationName') ?? 'Reservation Name'} : ${widget.reservation.reservationName}'),
+            Text('${AppLocalizations.of(context)?.translate('customerName') ?? 'Customer Name'} : ${widget.reservation.customerName}'),
+            Text('${AppLocalizations.of(context)?.translate('flightName') ?? 'Flight Name'} : ${widget.reservation.flightName}'),
+
+            // Display flight details if available
+            if (selectedFlightDetails != null) ...[
+              Text('${AppLocalizations.of(context)?.translate('departureCity') ?? 'Departure City'} : ${selectedFlightDetails!.departureCity}'),
+              Text('${AppLocalizations.of(context)?.translate('destination') ?? 'Destination'} : ${selectedFlightDetails!.destination}'),
+            ],
+
             SizedBox(height: 20),
+
+            // Button to navigate back to the previous screen
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -458,3 +513,5 @@ class ReservationDetailsPage extends StatelessWidget {
     );
   }
 }
+
+
