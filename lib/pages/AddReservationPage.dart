@@ -474,6 +474,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
