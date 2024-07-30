@@ -24,7 +24,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
   Future<void> _initDatabase() async {
     try {
       database = await $FloorAppDatabase.databaseBuilder('app_database1.db').build();
-      customerDAO = database.customerDao;
+      customerDAO = database.customerDAO;
       print('Database initialized');
     } catch (e) {
       print('Error initializing database: $e');

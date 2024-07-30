@@ -36,9 +36,9 @@ class _AddReservationPageState extends State<AddReservationPage> {
 
   Future<void> _initDatabase() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database1.db').build();
-    reservationDAO = database.reservationDao;
-    customerDAO = database.customerDao;
-    flightDAO = database.flightDao;
+    reservationDAO = database.reservationDAO;
+    customerDAO = database.customerDAO;
+    flightDAO = database.flightDAO;
 
     final listOfReservations = await reservationDAO.getAllItems();
     final listOfCustomers = await customerDAO.getAllCustomers();

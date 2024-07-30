@@ -29,7 +29,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
   }
 
   Future<void> _loadFlights() async {
-    final data = await _db.flightDao.getAllFlights();
+    final data = await _db.flightDAO.getAllFlights();
     setState(() {
       _flights.clear();
       _flights.addAll(data);
@@ -53,7 +53,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
         arrivalTime,
       );
 
-      await _db.flightDao.insertFlight(flight);
+      await _db.flightDAO.insertFlight(flight);
       _loadFlights();
 
       _nameController.clear();
@@ -83,7 +83,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
   }
 
   Future<void> _deleteFlight(Flight flight) async {
-    await _db.flightDao.deleteFlight(flight);
+    await _db.flightDAO.deleteFlight(flight);
     _loadFlights();
   }
 
@@ -161,7 +161,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
         arrivalTime,
       );
 
-      await _db.flightDao.updateFlight(flight);
+      await _db.flightDAO.updateFlight(flight);
       _loadFlights();
 
       _nameController.clear();

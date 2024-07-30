@@ -8,12 +8,15 @@ import '../modules/Reservation.dart';
 import '../DAO/ReservationDAO.dart';
 import '../modules/Flight.dart';
 import '../DAO/FlightDAO.dart';
+import '../DAO/AirplaneDAO.dart';
+import '../modules/Airplane.dart';
 
 part 'AppDatabase.g.dart';
 
-@Database(version: 1, entities: [Reservation,Customer,Flight])
+@Database(version: 1, entities: [Customer, Flight, Reservation, Airplane])
 abstract class AppDatabase extends FloorDatabase {
-  ReservationDAO get reservationDao;
-  CustomerDAO get customerDao;
-  FlightDAO get flightDao;
+  CustomerDAO get customerDAO;
+  FlightDAO get flightDAO;
+  ReservationDAO get reservationDAO;
+  AirplaneDAO get airplaneDAO;
 }

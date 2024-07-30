@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
-
 import 'pages/AirplaneListPage.dart';
 import 'pages/CustomerListPage.dart';
 import 'pages/FlightsListPage.dart';
 import 'pages/ReservationPage.dart';
+import 'utilities/AppDatabase.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  // Ensure the Flutter bindings are initialized before running the app
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize the database
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+
+  runApp(MyApp(database: database));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppDatabase database;
+
+  const MyApp({Key? key, required this.database}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +28,16 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page', database: database),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
   final String title;
+  final AppDatabase database;
+
+  const MyHomePage({Key? key, required this.title, required this.database}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -70,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => AirplaneListPage()),
                 );
               },
-              child: const Text("Airplane List Page "),
+              child: const Text("Airplane List Page"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -79,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => FlightsListPage()),
                 );
               },
-              child: const Text(" Flights List Page  "),
+              child: const Text("Flights List Page"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -88,8 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => ReservationPage()),
                 );
               },
-
-              child: const Text(" Reservation Page "),
+              child: const Text("Reservation Page"),
             ),
             const Text(
               'You have pushed the button this many times:',
