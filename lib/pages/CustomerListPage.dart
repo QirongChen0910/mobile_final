@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../utilities/AppDatabase.dart'; // 替换为你的实际路径
-import '../modules/Customer.dart';
-import '../DAO/CustomerDAO.dart';
+import 'package:mobile_final/DAO/CustomerDAO.dart';
+import 'package:mobile_final/modules/Customer.dart';
+import 'package:mobile_final/utilities/AppDatabase.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 
 class CustomerListPage extends StatefulWidget {
   @override
@@ -9,101 +10,228 @@ class CustomerListPage extends StatefulWidget {
 }
 
 class _CustomerListPageState extends State<CustomerListPage> {
-  late AppDatabase database;
-  late CustomerDAO customerDAO;
-  final TextEditingController _customerIDController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
+  late CustomerDAO _customerDAO;
+  List<Customer> _customers = [];
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _birthdayController = TextEditingController();
+
+  final EncryptedSharedPreferences _prefs = EncryptedSharedPreferences();
 
   @override
   void initState() {
     super.initState();
-    _initDatabase();
+    _initDb();
   }
 
-  Future<void> _initDatabase() async {
-    try {
-      database = await $FloorAppDatabase.databaseBuilder('app_database1.db').build();
-      customerDAO = database.customerDAO;
-      print('Database initialized');
-    } catch (e) {
-      print('Error initializing database: $e');
-    }
+  Future<void> _initDb() async {
+    final database = await $FloorAppDatabase.databaseBuilder('app_database1.db').build();
+    _customerDAO = database.customerDao;
+    _loadCustomers();
+    _loadPreviousData();
   }
 
-  void _insertCustomer() async {
+  Future<void> _loadCustomers() async {
+    final customers = await _customerDAO.getAllCustomers();
+    setState(() {
+      _customers = customers;
+    });
+  }
+
+  Future<void> _loadPreviousData() async {
+    final prefs = await _prefs.getInstance();
+    _firstNameController.text = prefs.getString('previousCustomerFirstName') ?? '';
+    _lastNameController.text = prefs.getString('previousCustomerLastName') ?? '';
+    _addressController.text = prefs.getString('previousCustomerAddress') ?? '';
+    _birthdayController.text = prefs.getString('previousCustomerBirthday') ?? '';
+  }
+
+  Future<void> _addCustomer() async {
     final firstName = _firstNameController.text;
     final lastName = _lastNameController.text;
+    final address = _addressController.text;
+    final birthday = _birthdayController.text;
 
-    if (firstName.isNotEmpty && lastName.isNotEmpty) {
-      try {
-        final customer = Customer(firstName, lastName);
-        await customerDAO.insertCustomer(customer);
-
-        // 清除文本框
-        _firstNameController.clear();
-        _lastNameController.clear();
-
-        // 显示成功消息
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Customer added successfully!')),
-        );
-      } catch (e) {
-        // 显示错误消息
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding customer: $e')),
-        );
-      }
-    } else {
-      // 显示错误消息
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all fields.')),
-      );
+    if (firstName.isEmpty || lastName.isEmpty || address.isEmpty || birthday.isEmpty) {
+      _showAlertDialog('Error', 'All fields must be filled.');
+      return;
     }
+
+    final customer = Customer(firstName, lastName, address, birthday);
+    await _customerDAO.insertCustomer(customer);
+
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _addressController.clear();
+    _birthdayController.clear();
+    _loadCustomers();
+  }
+
+  void _showAlertDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customer List Page'),
+        title: Text('Customer List'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info),
+            onPressed: () {
+              _showAlertDialog('Instructions', 'This is the customer list page. You can add, view, update, and delete customers.');
+            },
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(labelText: 'First Name'),
+                ),
+                TextField(
+                  controller: _lastNameController,
+                  decoration: InputDecoration(labelText: 'Last Name'),
+                ),
+                TextField(
+                  controller: _addressController,
+                  decoration: InputDecoration(labelText: 'Address'),
+                ),
+                TextField(
+                  controller: _birthdayController,
+                  decoration: InputDecoration(labelText: 'Birthday'),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _addCustomer,
+                  child: Text('Add Customer'),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _customers.length,
+              itemBuilder: (context, index) {
+                final customer = _customers[index];
+                return ListTile(
+                  title: Text('${customer.firstName} ${customer.lastName}'),
+                  subtitle: Text(customer.address),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CustomerDetailsPage(
+                          customer: customer,
+                          customerDao: _customerDAO,
+                          onUpdate: _loadCustomers,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomerDetailsPage extends StatelessWidget {
+  final Customer customer;
+  final CustomerDAO customerDao;
+  final Function onUpdate;
+
+  CustomerDetailsPage({
+    required this.customer,
+    required this.customerDao,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final firstNameController = TextEditingController(text: customer.firstName);
+    final lastNameController = TextEditingController(text: customer.lastName);
+    final addressController = TextEditingController(text: customer.address);
+    final birthdayController = TextEditingController(text: customer.birthday);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Customer Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 8),
+          children: [
             TextField(
-              controller: _firstNameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'First Name',
-              ),
+              controller: firstNameController,
+              decoration: InputDecoration(labelText: 'First Name'),
             ),
-            SizedBox(height: 8),
             TextField(
-              controller: _lastNameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Last Name',
-              ),
+              controller: lastNameController,
+              decoration: InputDecoration(labelText: 'Last Name'),
+            ),
+            TextField(
+              controller: addressController,
+              decoration: InputDecoration(labelText: 'Address'),
+            ),
+            TextField(
+              controller: birthdayController,
+              decoration: InputDecoration(labelText: 'Birthday'),
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _insertCustomer,
-              child: const Text('Add Customer'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    final updatedCustomer = Customer(
+                      firstNameController.text,
+                      lastNameController.text,
+                      addressController.text,
+                      birthdayController.text,
+                      customerID: customer.customerID, // Ensure to retain the original ID
+                    );
+                    await customerDao.updateCustomer(updatedCustomer);
+                    onUpdate();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Update'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await customerDao.deleteCustomer(customer);
+                    onUpdate();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Delete'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    super.dispose();
   }
 }
