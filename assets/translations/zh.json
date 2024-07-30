@@ -20,5 +20,21 @@
   "saveDataDialogTitle": "保存数据对话框",
   "saveDataDialogMessage": "你想保存页面上的数据吗？",
   "confirmDeleteMessage": "你想删除这个预订吗？",
-  "errorTitle": "错误"
+  "errorTitle": "错误",
+
+
+
+  "customerListPage": "客户列表页面",
+  "instructions": "说明",
+  "instructionsMessage": "这是客户列表页面。您可以添加、查看、更新和删除客户。",
+  "firstName": "名字",
+  "lastName": "姓氏",
+  "address": "地址",
+  "birthday": "生日",
+  "addCustomer": "添加客户",
+  "update": "更新",
+  "deleteCustomer": "删除客户",
+  "errorTitle": "错误",
+  "allFieldsRequired": "所有字段都是必填的。",
+  "customerDetails": "客户详细信息"
 }
