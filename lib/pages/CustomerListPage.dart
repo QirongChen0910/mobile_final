@@ -2,15 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_final/DAO/CustomerDAO.dart';
 import 'package:mobile_final/modules/Customer.dart';
 import 'package:mobile_final/utilities/AppDatabase.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 
 class CustomerListPage extends StatefulWidget {
-
-
-
-
   @override
   _CustomerListPageState createState() => _CustomerListPageState();
 }
@@ -24,21 +18,20 @@ class _CustomerListPageState extends State<CustomerListPage> {
   final _birthdayController = TextEditingController();
 
   final EncryptedSharedPreferences _prefs = EncryptedSharedPreferences();
-  late AppDatabase database;
+
   @override
   void initState() {
     super.initState();
     _initDb();
+  }
+
+  Future<void> _initDb() async {
+    final database = await $FloorAppDatabase.databaseBuilder('app_database1.db').build();
+    _customerDAO = database.customerDao;
     _loadCustomers();
     _loadPreviousData();
   }
 
-  Future<void>_initDb()async{
-    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-    _customerDAO=database.customerDao;
-    _loadPreviousData();
-
-  }
   Future<void> _loadCustomers() async {
     final customers = await _customerDAO.getAllCustomers();
     setState(() {
@@ -65,7 +58,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
       return;
     }
 
-    final customer = Customer( firstName, lastName, address, birthday);
+    final customer = Customer(firstName, lastName, address, birthday);
     await _customerDAO.insertCustomer(customer);
 
     _firstNameController.clear();
@@ -149,6 +142,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
                         builder: (context) => CustomerDetailsPage(
                           customer: customer,
                           customerDao: _customerDAO,
+                          onUpdate: _loadCustomers,
                         ),
                       ),
                     );
@@ -166,8 +160,13 @@ class _CustomerListPageState extends State<CustomerListPage> {
 class CustomerDetailsPage extends StatelessWidget {
   final Customer customer;
   final CustomerDAO customerDao;
+  final Function onUpdate;
 
-  CustomerDetailsPage({required this.customer, required this.customerDao});
+  CustomerDetailsPage({
+    required this.customer,
+    required this.customerDao,
+    required this.onUpdate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -211,15 +210,18 @@ class CustomerDetailsPage extends StatelessWidget {
                       lastNameController.text,
                       addressController.text,
                       birthdayController.text,
+                      customerID: customer.customerID, // Ensure to retain the original ID
                     );
                     await customerDao.updateCustomer(updatedCustomer);
+                    onUpdate();
                     Navigator.of(context).pop();
                   },
                   child: Text('Update'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    await customerDao.deleteCustomer(customer.customerID! as Customer);
+                    await customerDao.deleteCustomer(customer);
+                    onUpdate();
                     Navigator.of(context).pop();
                   },
                   child: Text('Delete'),
