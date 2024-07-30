@@ -1,0 +1,24 @@
+{
+  "customerListPage": "客户列表页面",
+  "airplaneListPage": "飞机列表页面",
+  "flightsListPage": "航班列表页面",
+  "reservationPage": "预订页面",
+  "welcomeMessage": "欢迎使用我们的应用程序！",
+
+  "selectCustomer": "选择顾客",
+  "selectFlight": "选择航班",
+  "enterDate": "输入你想要的日期",
+  "enterReservationName": "输入预订名称",
+  "addReservation": "添加预订",
+  "noReservation": "没有预订",
+  "reservationName": "预订名称：",
+  "customerName": "顾客名称：",
+  "flightName": "航班名称：",
+  "departureCity": "出发城市",
+  "destination": "目的地",
+  "delete": "删除",
+  "saveDataDialogTitle": "保存数据对话框",
+  "saveDataDialogMessage": "你想保存页面上的数据吗？",
+  "confirmDeleteMessage": "你想删除这个预订吗？",
+  "errorTitle": "错误"
+}
