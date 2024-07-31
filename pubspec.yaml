@@ -42,6 +42,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   floor: ^1.4.0
   floor_generator: ^1.4.0
+  dartdoc: ^8.0.8
 
 dev_dependencies:
   flutter_test:
