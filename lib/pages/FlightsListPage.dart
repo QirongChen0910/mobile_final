@@ -1,3 +1,4 @@
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import '../modules/Flight.dart';
 import '../utilities/AppDatabase.dart';
@@ -17,11 +18,13 @@ class _FlightsListPageState extends State<FlightsListPage> {
   late AppDatabase _db;
   List<Flight> _flights = [];
   Flight? _selectedFlight;
+  final EncryptedSharedPreferences _encryptedPrefs = EncryptedSharedPreferences();
 
   @override
   void initState() {
     super.initState();
     _initDb();
+    _loadSavedData();
   }
 
   Future<void> _initDb() async {
@@ -56,6 +59,8 @@ class _FlightsListPageState extends State<FlightsListPage> {
 
       await _db.flightDao.insertFlight(flight);
       _loadFlights();
+
+      _saveData();
 
       _nameController.clear();
       _departureController.clear();
@@ -114,6 +119,8 @@ class _FlightsListPageState extends State<FlightsListPage> {
       await _db.flightDao.updateFlight(flight);
       _loadFlights();
 
+      _saveData();
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)?.translate('flightUpdated') ?? 'Flight updated')),
       );
@@ -145,6 +152,22 @@ class _FlightsListPageState extends State<FlightsListPage> {
     });
   }
 
+  void _saveData() {
+    _encryptedPrefs.setString('flightName', _nameController.text);
+    _encryptedPrefs.setString('departureCity', _departureController.text);
+    _encryptedPrefs.setString('destinationCity', _destinationController.text);
+    _encryptedPrefs.setString('departureTime', _departureTimeController.text);
+    _encryptedPrefs.setString('arrivalTime', _arrivalTimeController.text);
+  }
+
+  void _loadSavedData() async {
+    _nameController.text = await _encryptedPrefs.getString('flightName') ?? '';
+    _departureController.text = await _encryptedPrefs.getString('departureCity') ?? '';
+    _destinationController.text = await _encryptedPrefs.getString('destinationCity') ?? '';
+    _departureTimeController.text = await _encryptedPrefs.getString('departureTime') ?? '';
+    _arrivalTimeController.text = await _encryptedPrefs.getString('arrivalTime') ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -154,6 +177,26 @@ class _FlightsListPageState extends State<FlightsListPage> {
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             title: Text(AppLocalizations.of(context)?.translate('flightsListPage') ?? 'Flights List Page'),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.info_outline),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
+                      content: Text(AppLocalizations.of(context)?.translate('instructionsContent') ?? 'Instructions on how to use the interface.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           body: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -178,145 +221,147 @@ class _FlightsListPageState extends State<FlightsListPage> {
   Widget _buildFlightList() {
     return Column(
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.translate('enterFlightName') ?? 'Enter flight name',
+    Row(
+    children: <Widget>[
+    Expanded(
+    child: TextField(
+    controller: _nameController,
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context)?.translate('enterFlightName') ?? 'Enter flight name',
+      ),
+    ),
+    ),
+    ],
+    ),
+    SizedBox(height: 8),
+    Row(
+    children: <Widget>[
+    Expanded(
+    child: TextField(
+    controller: _departureController,
+    decoration: InputDecoration(
+    labelText: AppLocalizations.of(context)?.translate('enterDepartureCity') ?? 'Enter departure city',
+    ),
+    ),
+    ),
+    ],
+    ),
+    SizedBox(height: 8),
+    Row(
+    children: <Widget>[
+    Expanded(
+    child: TextField(
+    controller: _destinationController,
+    decoration: InputDecoration(
+    labelText: AppLocalizations.of(context)?.translate('enterDestinationCity') ?? 'Enter destination city',
+    ),
+    ),
+    ),
+    ],
+    ),
+    SizedBox(height: 8),
+    Row(
+    children: <Widget>[
+    Expanded(
+    child: TextField(
+    controller: _departureTimeController,
+    decoration: InputDecoration(
+    labelText: AppLocalizations.of(context)?.translate('enterDepartureTime') ?? 'Enter departure time',
+    ),
+    ),
+    ),
+    ],
+    ),
+    SizedBox(height: 8),
+    Row(
+    children: <Widget>[
+    Expanded(
+    child: TextField(
+    controller: _arrivalTimeController,
+    decoration: InputDecoration(
+    labelText: AppLocalizations.of(context)?.translate('enterArrivalTime') ?? 'Enter arrival time',
+    ),
+    ),
+    ),
+    ],
+    ),
+    SizedBox(height: 8),
+    ElevatedButton(
+    onPressed: _addFlight,
+    child: Text(AppLocalizations.of(context)?.translate('addFlight') ?? 'Add Flight'),
+    ),
+    SizedBox(height: 20),
+    Expanded(
+    child: _flights.isEmpty
+    ? Center(child: Text(AppLocalizations.of(context)?.translate('noFlights') ?? 'No Flights'))
+        : ListView.builder(
+      itemCount: _flights.length,
+      itemBuilder: (context, index) {
+        final flight = _flights[index];
+        return GestureDetector(
+          onTap: () => _onItemTap(flight),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  '${AppLocalizations.of(context)?.translate('flightNumber')} ${index + 1}: ${flight.flightName} ${AppLocalizations.of(context)?.translate('from')} ${flight.departureCity} ${AppLocalizations.of(context)?.translate('to')} ${flight.destination}',
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-        SizedBox(height: 8),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: TextField(
-                controller: _departureController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.translate('enterDepartureCity') ?? 'Enter departure city',
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: TextField(
-                controller: _destinationController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.translate('enterDestinationCity') ?? 'Enter destination city',
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: TextField(
-                controller: _departureTimeController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.translate('enterDepartureTime') ?? 'Enter departure time',
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: TextField(
-                controller: _arrivalTimeController,
-                decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.translate('enterArrivalTime') ?? 'Enter arrival time',
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        ElevatedButton(
-          onPressed: _addFlight,
-          child: Text(AppLocalizations.of(context)?.translate('addFlight') ?? 'Add Flight'),
-        ),
-        SizedBox(height: 20),
-        Expanded(
-          child: _flights.isEmpty
-              ? Center(child: Text(AppLocalizations.of(context)?.translate('noFlights') ?? 'No Flights'))
-              : ListView.builder(
-            itemCount: _flights.length,
-            itemBuilder: (context, index) {
-              final flight = _flights[index];
-              return GestureDetector(
-                onTap: () => _onItemTap(flight),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text('${AppLocalizations.of(context)?.translate('flightNumber')} ${index + 1}: ${flight.flightName} ${AppLocalizations.of(context)?.translate('from')} ${flight.departureCity} ${AppLocalizations.of(context)?.translate('to')} ${flight.destination}'),
-                    ],
-                  ),
-                ),
-              );
-            },
           ),
-        ),
+        );
+      },
+    ),
+    ),
       ],
     );
   }
 
   Widget _buildDetailsPage(Flight flight) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-    Text(
-    '${AppLocalizations.of(context)?.translate('flightName')}: ${flight.flightName}',
-    style: TextStyle(fontSize: 20),
-    ),
-    Text(
-    '${AppLocalizations.of(context)?.translate('departureCity')}: ${flight.departureCity}',
-    style: TextStyle(fontSize: 16),
-    ),
-    Text(
-    '${AppLocalizations.of(context)?.translate('destinationCity')}: ${flight.destination}',
-    style: TextStyle(fontSize: 16),
-    ),
-    Text(
-    '${AppLocalizations.of(context)?.translate('departureTime')}: ${flight.departureTime}',
-    style: TextStyle(fontSize: 16),
-    ),
-    Text(
-      '${AppLocalizations.of(context)?.translate('arrivalTime')}: ${flight.arrivalTime}',
-      style: TextStyle(fontSize: 16),
-    ),
-          SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => _updateFlight(flight.flightID!),
-                  child: Text(AppLocalizations.of(context)?.translate('update') ?? 'Update'),
-                ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${AppLocalizations.of(context)?.translate('flightName')}: ${flight.flightName}',
+          style: TextStyle(fontSize: 20),
+        ),
+        Text(
+          '${AppLocalizations.of(context)?.translate('departureCity')}: ${flight.departureCity}',
+          style: TextStyle(fontSize: 16),
+        ),
+        Text(
+          '${AppLocalizations.of(context)?.translate('destinationCity')}: ${flight.destination}',
+          style: TextStyle(fontSize: 16),
+        ),
+        Text(
+          '${AppLocalizations.of(context)?.translate('departureTime')}: ${flight.departureTime}',
+          style: TextStyle(fontSize: 16),
+        ),
+        Text(
+          '${AppLocalizations.of(context)?.translate('arrivalTime')}: ${flight.arrivalTime}',
+          style: TextStyle(fontSize: 16),
+        ),
+        SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => _updateFlight(flight.flightID!),
+                child: Text(AppLocalizations.of(context)?.translate('update') ?? 'Update'),
               ),
-              SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => _deleteFlight(flight),
-                  child: Text(AppLocalizations.of(context)?.translate('delete') ?? 'Delete'),
-                ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => _deleteFlight(flight),
+                child: Text(AppLocalizations.of(context)?.translate('delete') ?? 'Delete'),
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
