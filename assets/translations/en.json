@@ -21,5 +21,25 @@
   "saveDataDialogTitle": "Save Data Dialog",
   "saveDataDialogMessage": "Do you want to save data on this page?",
   "confirmDeleteMessage": "Do you want to delete this reservation?",
-  "errorTitle": "Error"
+  "errorTitle": "Error",
+
+
+
+  "customerListPage": "Customer List Page",
+  "instructions": "Instructions",
+  "instructionsMessage": "This is the customer list page. You can add, view, update, and delete customers.",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "address": "Address",
+  "birthday": "Birthday",
+  "addCustomer": "Add Customer",
+  "update": "Update",
+  "deleteCustomer": "Delete Customer",
+  "errorTitle": "Error",
+  "allFieldsRequired": "All fields are required.",
+  "customerDetails": "Customer Details"
+
+
+
+
 }
