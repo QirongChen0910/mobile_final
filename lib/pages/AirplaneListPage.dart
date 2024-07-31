@@ -1,14 +1,18 @@
+/// The AirplaneListPage displays a list of airplanes
+/// and provides functionality to add, update, delete, and view airplane details.
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import '../modules/Airplane.dart';
 import '../utilities/AppDatabase.dart';
 import 'package:mobile_final/utilities/AppLocalizations.dart';
 
+/// The AirplaneListPage widget.
 class AirplaneListPage extends StatefulWidget {
   @override
   _AirplaneListPageState createState() => _AirplaneListPageState();
 }
 
+/// The _AirplaneListPageState class manages the state of the AirplaneListPage widget.
 class _AirplaneListPageState extends State<AirplaneListPage> {
   final TextEditingController _typeController = TextEditingController();
   final TextEditingController _passengersController = TextEditingController();
@@ -26,12 +30,14 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     _loadSavedData();
   }
 
+  /// Initializes the database and loads the list of airplanes.
   Future<void> _initDb() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database2.db').build();
     _db = database;
     _loadAirplanes();
   }
 
+  /// Loads all airplanes from the database.
   Future<void> _loadAirplanes() async {
     final data = await _db.airplaneDAO.getAllAirplanes();
     setState(() {
@@ -39,6 +45,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     });
   }
 
+  /// Adds a new airplane to the database.
   Future<void> _addAirplane() async {
     final type = _typeController.text;
     final passengers = int.tryParse(_passengersController.text);
@@ -77,6 +84,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     }
   }
 
+  /// Deletes an airplane from the database.
   Future<void> _deleteAirplane(Airplane airplane) async {
     await _db.airplaneDAO.deleteAirplane(airplane);
     _loadAirplanes();
@@ -87,6 +95,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     }
   }
 
+  /// Updates an existing airplane in the database.
   Future<void> _updateAirplane(int id) async {
     final type = _typeController.text;
     final passengers = int.tryParse(_passengersController.text);
@@ -120,6 +129,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     }
   }
 
+  /// Handles the selection of an airplane from the list.
   void _onItemTap(Airplane airplane) {
     setState(() {
       _selectedAirplane = airplane;
@@ -130,6 +140,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     });
   }
 
+  /// Saves data to encrypted shared preferences.
   void _saveData() {
     _encryptedPrefs.setString('type', _typeController.text);
     _encryptedPrefs.setString('passengers', _passengersController.text);
@@ -137,6 +148,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     _encryptedPrefs.setString('range', _rangeController.text);
   }
 
+  /// Loads saved data from encrypted shared preferences.
   void _loadSavedData() async {
     _typeController.text = await _encryptedPrefs.getString('type') ?? '';
     _passengersController.text = await _encryptedPrefs.getString('passengers') ?? '';
@@ -144,6 +156,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     _rangeController.text = await _encryptedPrefs.getString('range') ?? '';
   }
 
+  /// Clears all input fields.
   void _clearInputFields() {
     _typeController.clear();
     _passengersController.clear();
@@ -210,6 +223,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     );
   }
 
+  /// Builds the widget displaying the list of airplanes and the input fields for adding a new airplane.
   Widget _buildAirplaneList() {
     return Column(
       children: <Widget>[
@@ -314,6 +328,7 @@ class _AirplaneListPageState extends State<AirplaneListPage> {
     );
   }
 
+  /// Builds the widget displaying the details of a selected airplane.
   Widget _buildDetailsPage(Airplane airplane) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
