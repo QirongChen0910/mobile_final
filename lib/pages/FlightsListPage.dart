@@ -4,6 +4,8 @@ import '../modules/Flight.dart';
 import '../utilities/AppDatabase.dart';
 import '../utilities/AppLocalizations.dart';
 
+
+
 class FlightsListPage extends StatefulWidget {
   @override
   _FlightsListPageState createState() => _FlightsListPageState();
@@ -108,6 +110,37 @@ class _FlightsListPageState extends State<FlightsListPage> {
     }
   }
 
+  Future<void> _confirmDeleteFlight(Flight flight) async {
+    showDialog(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: Text(
+                AppLocalizations.of(context)?.translate('confirmDelete') ??
+                    'Confirm Deletion'),
+            content: Text(AppLocalizations.of(context)?.translate(
+                'confirmDeleteContent') ??
+                'Are you sure you want to delete this flight?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)?.translate('cancel') ??
+                    'Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _deleteFlight(flight);
+                },
+                child: Text(
+                    AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+
   Future<void> _updateFlight(int id) async {
     final flightName = _nameController.text;
     final departureCity = _departureController.text;
@@ -158,6 +191,36 @@ class _FlightsListPageState extends State<FlightsListPage> {
             ),
       );
     }
+  }
+
+  Future<void> _confirmUpdateFlight(int id) async {
+    showDialog(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: Text(
+                AppLocalizations.of(context)?.translate('confirmUpdate') ??
+                    'Confirm Update'),
+            content: Text(AppLocalizations.of(context)?.translate(
+                'confirmUpdateContent') ??
+                'Are you sure you want to update this flight?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)?.translate('cancel') ??
+                    'Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _updateFlight(id);
+                },
+                child: Text(
+                    AppLocalizations.of(context)?.translate('confirm') ?? 'Confirm'),
+              ),
+            ],
+          ),
+    );
   }
 
   void _onItemTap(Flight flight) {
@@ -249,6 +312,22 @@ class _FlightsListPageState extends State<FlightsListPage> {
                 child: Text(
                     AppLocalizations.of(context)?.translate('help') ?? 'Help'),
               ),
+              // PopupMenuButton<String>(
+              //   onSelected: _changeLanguage,
+              //   itemBuilder: (BuildContext context) {
+              //     return [
+              //       PopupMenuItem(
+              //         value: 'en',
+              //         child: Text('English'),
+              //       ),
+              //       PopupMenuItem(
+              //         value: 'zh',
+              //         child: Text('中文'),
+              //       ),
+              //     ];
+              //   },
+              //   icon: Icon(Icons.g_translate),
+              // ),
             ],
           ),
           body: Padding(
@@ -409,7 +488,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
               .flightName}',
           style: TextStyle(fontSize: 20),
         ),
-        SizedBox(height: 18), // Add space between lines
+        SizedBox(height: 18),
         Text(
           '${AppLocalizations.of(context)?.translate('departureCity')}: ${flight
               .departureCity}',
@@ -433,12 +512,12 @@ class _FlightsListPageState extends State<FlightsListPage> {
               .arrivalTime}',
           style: TextStyle(fontSize: 16),
         ),
-        SizedBox(height: 20), // Add space before buttons
+        SizedBox(height: 20),
         Row(
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: () => _updateFlight(flight.flightID!),
+                onPressed: () => _confirmUpdateFlight(flight.flightID!),
                 child: Text(AppLocalizations.of(context)?.translate('update') ??
                     'Update'),
               ),
@@ -446,7 +525,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
             SizedBox(width: 10),
             Expanded(
               child: ElevatedButton(
-                onPressed: () => _deleteFlight(flight),
+                onPressed: () => _confirmDeleteFlight(flight),
                 child: Text(AppLocalizations.of(context)?.translate('delete') ??
                     'Delete'),
               ),

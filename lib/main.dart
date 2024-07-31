@@ -46,7 +46,6 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: MyHomePage(
-        title: 'Application Home Page',
         onLocaleChanged: _setLocale,
       ),
     );
@@ -54,9 +53,8 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title, required this.onLocaleChanged});
+  const MyHomePage({super.key, required this.onLocaleChanged});
 
-  final String title;
   final void Function(Locale) onLocaleChanged;
 
   @override
@@ -83,29 +81,29 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(localizations?.translate('applicationHomePage') ?? 'Application Home Page'),
         actions: [
-      Padding(
-      padding: const EdgeInsets.only(right: 21.0), // Adjust the value to move it left
-          child: PopupMenuButton<String>(
-            onSelected: _changeLanguage,
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem(
-                  value: 'en',
-                  child: Text('English'),
-                ),
-                PopupMenuItem(
-                  value: 'zh',
-                  child: Text('中文'),
-                ),
-              ];
-            },
-            icon: Icon(Icons.language),
-                ),
+          Padding(
+            padding: const EdgeInsets.only(right: 21.0), // Adjust the value to move it left
+            child: PopupMenuButton<String>(
+              onSelected: _changeLanguage,
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem(
+                    value: 'en',
+                    child: Text('English'),
+                  ),
+                  PopupMenuItem(
+                    value: 'zh',
+                    child: Text('中文'),
+                  ),
+                ];
+              },
+              icon: Icon(Icons.g_translate),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Center(
@@ -119,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               SizedBox(height: 10),
               Text(
-                'Explore the different sections of our application using the buttons below.',
+                localizations?.translate('exploreSections') ?? 'Explore the different sections of our application using the buttons below.',
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),

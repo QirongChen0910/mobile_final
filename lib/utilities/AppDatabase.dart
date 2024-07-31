@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'package:floor/floor.dart';
-import 'package:mobile_final/DAO/FlightDAO.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
+import '../DAO/FlightDAO.dart';
 import '../modules/Customer.dart';
 import '../DAO/CustomerDAO.dart';
 import '../modules/Reservation.dart';
 import '../DAO/ReservationDAO.dart';
 import '../modules/Flight.dart';
-import '../DAO/FlightDAO.dart';
 
 part 'AppDatabase.g.dart';
 
@@ -17,3 +16,5 @@ abstract class AppDatabase extends FloorDatabase {
   CustomerDAO get customerDao;
   FlightDAO get flightDao;
 }
+
+
