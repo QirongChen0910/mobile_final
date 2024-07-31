@@ -38,6 +38,7 @@
   "from": "from",
   "to": "to",
   "help": "Help",
+  "clear": "Clear",
   "instructions": "Instructions",
   "instructionsContent": "1. To add a flight, enter all flight details in the input fields and then click the \"Add Flight\" button to save the flight.\n\n2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the Update button to save changes.\n\n4. To delete a flight, tap on a flight in the list to view its details, click the Delete button, and confirm the deletion in the AlertDialog."
 }

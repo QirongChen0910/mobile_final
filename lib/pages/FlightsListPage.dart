@@ -28,7 +28,8 @@ class _FlightsListPageState extends State<FlightsListPage> {
   }
 
   Future<void> _initDb() async {
-    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+    final database = await $FloorAppDatabase.databaseBuilder('app_database.db')
+        .build();
     _db = database;
     _loadFlights();
   }
@@ -47,7 +48,8 @@ class _FlightsListPageState extends State<FlightsListPage> {
     final departureTime = _departureTimeController.text;
     final arrivalTime = _arrivalTimeController.text;
 
-    if (flightName.isNotEmpty && departureCity.isNotEmpty && destinationCity.isNotEmpty &&
+    if (flightName.isNotEmpty && departureCity.isNotEmpty &&
+        destinationCity.isNotEmpty &&
         departureTime.isNotEmpty && arrivalTime.isNotEmpty) {
       final flight = Flight(
         flightName,
@@ -69,21 +71,29 @@ class _FlightsListPageState extends State<FlightsListPage> {
       _arrivalTimeController.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.translate('flightAdded') ?? 'Flight added')),
+        SnackBar(content: Text(
+            AppLocalizations.of(context)?.translate('flightAdded') ??
+                'Flight added')),
       );
     } else {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
-          content: Text(AppLocalizations.of(context)?.translate('allFieldsRequired') ?? 'All fields are required and must have valid values.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+        builder: (context) =>
+            AlertDialog(
+              title: Text(
+                  AppLocalizations.of(context)?.translate('errorTitle') ??
+                      'Error'),
+              content: Text(AppLocalizations.of(context)?.translate(
+                  'allFieldsRequired') ??
+                  'All fields are required and must have valid values.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                      AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
@@ -105,7 +115,8 @@ class _FlightsListPageState extends State<FlightsListPage> {
     final departureTime = _departureTimeController.text;
     final arrivalTime = _arrivalTimeController.text;
 
-    if (flightName.isNotEmpty && departureCity.isNotEmpty && destinationCity.isNotEmpty &&
+    if (flightName.isNotEmpty && departureCity.isNotEmpty &&
+        destinationCity.isNotEmpty &&
         departureTime.isNotEmpty && arrivalTime.isNotEmpty) {
       final flight = Flight(
         flightID: id,
@@ -122,21 +133,29 @@ class _FlightsListPageState extends State<FlightsListPage> {
       _saveData();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.translate('flightUpdated') ?? 'Flight updated')),
+        SnackBar(content: Text(
+            AppLocalizations.of(context)?.translate('flightUpdated') ??
+                'Flight updated')),
       );
     } else {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
-          content: Text(AppLocalizations.of(context)?.translate('allFieldsRequired') ?? 'All fields are required and must have valid values.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+        builder: (context) =>
+            AlertDialog(
+              title: Text(
+                  AppLocalizations.of(context)?.translate('errorTitle') ??
+                      'Error'),
+              content: Text(AppLocalizations.of(context)?.translate(
+                  'allFieldsRequired') ??
+                  'All fields are required and must have valid values.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                      AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
@@ -162,10 +181,27 @@ class _FlightsListPageState extends State<FlightsListPage> {
 
   void _loadSavedData() async {
     _nameController.text = await _encryptedPrefs.getString('flightName') ?? '';
-    _departureController.text = await _encryptedPrefs.getString('departureCity') ?? '';
-    _destinationController.text = await _encryptedPrefs.getString('destinationCity') ?? '';
-    _departureTimeController.text = await _encryptedPrefs.getString('departureTime') ?? '';
-    _arrivalTimeController.text = await _encryptedPrefs.getString('arrivalTime') ?? '';
+    _departureController.text =
+        await _encryptedPrefs.getString('departureCity') ?? '';
+    _destinationController.text =
+        await _encryptedPrefs.getString('destinationCity') ?? '';
+    _departureTimeController.text =
+        await _encryptedPrefs.getString('departureTime') ?? '';
+    _arrivalTimeController.text =
+        await _encryptedPrefs.getString('arrivalTime') ?? '';
+  }
+
+  void _clearInputFields() {
+    _nameController.clear();
+    _departureController.clear();
+    _destinationController.clear();
+    _departureTimeController.clear();
+    _arrivalTimeController.clear();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(
+          AppLocalizations.of(context)?.translate('fieldsCleared') ??
+              'Input fields cleared')),
+    );
   }
 
   @override
@@ -175,50 +211,43 @@ class _FlightsListPageState extends State<FlightsListPage> {
         final isLargeScreen = constraints.maxWidth > 600;
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            title: Text(AppLocalizations.of(context)?.translate('flightsListPage') ?? 'Flights List Page'),
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .inversePrimary,
+            title: Text(
+                AppLocalizations.of(context)?.translate('flightsListPage') ??
+                    'Flights List Page'),
             actions: [
-              // IconButton(
-              //   icon: Icon(Icons.info_outline),
-              //   onPressed: () {
-              //     showDialog(
-              //       context: context,
-              //       builder: (context) => AlertDialog(
-              //         title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
-              //         content: Text(AppLocalizations.of(context)?.translate('instructionsContent') ?? 'Instructions on how to use the interface.'),
-              //         actions: [
-              //           TextButton(
-              //             onPressed: () => Navigator.pop(context),
-              //             child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   },
-              // ),
               OutlinedButton(
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
-                      content: Text(
-                          AppLocalizations.of(context)?.translate('instructionsContent') ??
-                              '1. To add a flight, enter all flight details in the input fields and then click the "Add Flight" button to save the flight.\n\n'
-                                  '2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n'
-                                  '3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the "Update" button to save changes.\n\n'
-                                  '4. To delete a flight, tap on a flight in the list to view its details, click the "Delete" button, and confirm the deletion in the AlertDialog.'
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+                    builder: (context) =>
+                        AlertDialog(
+                          title: Text(AppLocalizations.of(context)?.translate(
+                              'instructions') ?? 'Instructions'),
+                          content: Text(
+                              AppLocalizations.of(context)?.translate(
+                                  'instructionsContent') ??
+                                  '1. To add a flight, enter all flight details in the input fields and then click the "Add Flight" button to save the flight.\n\n'
+                                      '2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n'
+                                      '3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the "Update" button to save changes.\n\n'
+                                      '4. To delete a flight, tap on a flight in the list to view its details, click the "Delete" button, and confirm the deletion in the AlertDialog.'
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                  AppLocalizations.of(context)?.translate(
+                                      'ok') ?? 'OK'),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
                   );
                 },
-                child: Text(AppLocalizations.of(context)?.translate('help') ?? 'Help'),
+                child: Text(
+                    AppLocalizations.of(context)?.translate('help') ?? 'Help'),
               ),
             ],
           ),
@@ -245,100 +274,128 @@ class _FlightsListPageState extends State<FlightsListPage> {
   Widget _buildFlightList() {
     return Column(
       children: <Widget>[
-    Row(
-    children: <Widget>[
-    Expanded(
-    child: TextField(
-    controller: _nameController,
-      decoration: InputDecoration(
-        labelText: AppLocalizations.of(context)?.translate('enterFlightName') ?? 'Enter flight name',
-      ),
-    ),
-    ),
-    ],
-    ),
-    SizedBox(height: 8),
-    Row(
-    children: <Widget>[
-    Expanded(
-    child: TextField(
-    controller: _departureController,
-    decoration: InputDecoration(
-    labelText: AppLocalizations.of(context)?.translate('enterDepartureCity') ?? 'Enter departure city',
-    ),
-    ),
-    ),
-    ],
-    ),
-    SizedBox(height: 8),
-    Row(
-    children: <Widget>[
-    Expanded(
-    child: TextField(
-    controller: _destinationController,
-    decoration: InputDecoration(
-    labelText: AppLocalizations.of(context)?.translate('enterDestinationCity') ?? 'Enter destination city',
-    ),
-    ),
-    ),
-    ],
-    ),
-    SizedBox(height: 8),
-    Row(
-    children: <Widget>[
-    Expanded(
-    child: TextField(
-    controller: _departureTimeController,
-    decoration: InputDecoration(
-    labelText: AppLocalizations.of(context)?.translate('enterDepartureTime') ?? 'Enter departure time',
-    ),
-    ),
-    ),
-    ],
-    ),
-    SizedBox(height: 8),
-    Row(
-    children: <Widget>[
-    Expanded(
-    child: TextField(
-    controller: _arrivalTimeController,
-    decoration: InputDecoration(
-    labelText: AppLocalizations.of(context)?.translate('enterArrivalTime') ?? 'Enter arrival time)',
-    ),
-    ),
-    ),
-    ],
-    ),
-    SizedBox(height: 8),
-    ElevatedButton(
-    onPressed: _addFlight,
-    child: Text(AppLocalizations.of(context)?.translate('addFlight') ?? 'Add Flight'),
-    ),
-    SizedBox(height: 20),
-    Expanded(
-    child: _flights.isEmpty
-    ? Center(child: Text(AppLocalizations.of(context)?.translate('noFlights') ?? 'No Flights'))
-        : ListView.builder(
-      itemCount: _flights.length,
-      itemBuilder: (context, index) {
-        final flight = _flights[index];
-        return GestureDetector(
-          onTap: () => _onItemTap(flight),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  '${AppLocalizations.of(context)?.translate('flightNumber')} ${index + 1}: ${flight.flightName} ${AppLocalizations.of(context)?.translate('from')} ${flight.departureCity} ${AppLocalizations.of(context)?.translate('to')} ${flight.destination}',
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate(
+                      'enterFlightName') ?? 'Enter flight name',
                 ),
-              ],
+              ),
             ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _departureController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate(
+                      'enterDepartureCity') ?? 'Enter departure city',
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _destinationController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate(
+                      'enterDestinationCity') ?? 'Enter destination city',
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _departureTimeController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate(
+                      'enterDepartureTime') ?? 'Enter departure time',
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _arrivalTimeController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate(
+                      'enterArrivalTime') ?? 'Enter arrival time',
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _addFlight,
+                child: Text(
+                    AppLocalizations.of(context)?.translate('addFlight') ??
+                        'Add Flight'),
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _clearInputFields,
+                child: Text(AppLocalizations.of(context)?.translate('clear') ??
+                    'Clear'),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        Expanded(
+          child: _flights.isEmpty
+              ? Center(child: Text(
+              AppLocalizations.of(context)?.translate('noFlights') ??
+                  'No Flights'))
+              : ListView.builder(
+            itemCount: _flights.length,
+            itemBuilder: (context, index) {
+              final flight = _flights[index];
+              return GestureDetector(
+                onTap: () => _onItemTap(flight),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        '${AppLocalizations.of(context)?.translate(
+                            'flightNumber')} ${index + 1}: ${flight
+                            .flightName} ${AppLocalizations.of(context)
+                            ?.translate('from')} ${flight
+                            .departureCity} ${AppLocalizations.of(context)
+                            ?.translate('to')} ${flight.destination}',
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
-        );
-      },
-    ),
-    ),
+        ),
       ],
     );
   }
@@ -348,39 +405,50 @@ class _FlightsListPageState extends State<FlightsListPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${AppLocalizations.of(context)?.translate('flightName')}: ${flight.flightName}',
+          '${AppLocalizations.of(context)?.translate('flightName')}: ${flight
+              .flightName}',
           style: TextStyle(fontSize: 20),
         ),
+        SizedBox(height: 18), // Add space between lines
         Text(
-          '${AppLocalizations.of(context)?.translate('departureCity')}: ${flight.departureCity}',
+          '${AppLocalizations.of(context)?.translate('departureCity')}: ${flight
+              .departureCity}',
           style: TextStyle(fontSize: 16),
         ),
+        SizedBox(height: 18),
         Text(
-          '${AppLocalizations.of(context)?.translate('destinationCity')}: ${flight.destination}',
+          '${AppLocalizations.of(context)?.translate(
+              'destinationCity')}: ${flight.destination}',
           style: TextStyle(fontSize: 16),
         ),
+        SizedBox(height: 18),
         Text(
-          '${AppLocalizations.of(context)?.translate('departureTime')}: ${flight.departureTime}',
+          '${AppLocalizations.of(context)?.translate('departureTime')}: ${flight
+              .departureTime}',
           style: TextStyle(fontSize: 16),
         ),
+        SizedBox(height: 18),
         Text(
-          '${AppLocalizations.of(context)?.translate('arrivalTime')}: ${flight.arrivalTime}',
+          '${AppLocalizations.of(context)?.translate('arrivalTime')}: ${flight
+              .arrivalTime}',
           style: TextStyle(fontSize: 16),
         ),
-        SizedBox(height: 20),
+        SizedBox(height: 20), // Add space before buttons
         Row(
           children: [
             Expanded(
               child: ElevatedButton(
                 onPressed: () => _updateFlight(flight.flightID!),
-                child: Text(AppLocalizations.of(context)?.translate('update') ?? 'Update'),
+                child: Text(AppLocalizations.of(context)?.translate('update') ??
+                    'Update'),
               ),
             ),
             SizedBox(width: 10),
             Expanded(
               child: ElevatedButton(
                 onPressed: () => _deleteFlight(flight),
-                child: Text(AppLocalizations.of(context)?.translate('delete') ?? 'Delete'),
+                child: Text(AppLocalizations.of(context)?.translate('delete') ??
+                    'Delete'),
               ),
             ),
           ],
@@ -389,4 +457,3 @@ class _FlightsListPageState extends State<FlightsListPage> {
     );
   }
 }
-
