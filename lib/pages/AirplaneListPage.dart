@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import '../modules/Airplane.dart';
-import '../DAO/AirplaneDAO.dart';
 import '../utilities/AppDatabase.dart';
 
 class AirplaneListPage extends StatefulWidget {
@@ -11,234 +8,204 @@ class AirplaneListPage extends StatefulWidget {
 }
 
 class _AirplaneListPageState extends State<AirplaneListPage> {
+  final List<Airplane> _airplanes = [];
   final TextEditingController _typeController = TextEditingController();
   final TextEditingController _passengersController = TextEditingController();
   final TextEditingController _speedController = TextEditingController();
   final TextEditingController _rangeController = TextEditingController();
-  List<Airplane> _airplanes = [];
-  Airplane? _selectedAirplane;
-  final String _key = 'YOUR_ENCRYPTION_KEY'; // Make sure to use a 32-byte key
-  late AppDatabase _database;
+  late AppDatabase _db;
 
   @override
   void initState() {
     super.initState();
-    _initDatabase();
-    _loadTextField();
+    _initDb();
   }
 
-  Future<void> _initDatabase() async {
-    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-    _database = database;
-    _loadAirplanes();
+  Future<void> _initDb() async {
+    final database = await $FloorAppDatabase.databaseBuilder('app_database2.db').build();
+    _db = database;
+    await _loadAirplanes();  // Load airplanes after database initialization
   }
 
   Future<void> _loadAirplanes() async {
-    final airplanes = await _database.airplaneDAO.getAllAirplanes();
+    final data = await _db.airplaneDAO.getAllAirplanes();
     setState(() {
-      _airplanes = airplanes;
+      _airplanes.clear();
+      _airplanes.addAll(data);
     });
   }
 
-  Future<void> _addAirplane(String type, int passengers, int speed, int range) async {
-    final airplane = Airplane(type, passengers, speed, range);
-    await _database.airplaneDAO.insertAirplane(airplane);
-    _loadAirplanes();
-  }
+  Future<void> _addAirplane() async {
+    final type = _typeController.text;
+    final passengers = int.tryParse(_passengersController.text);
+    final speed = int.tryParse(_speedController.text);
+    final range = int.tryParse(_rangeController.text);
 
-  Future<void> _updateAirplane(Airplane airplane) async {
-    await _database.airplaneDAO.updateAirplane(airplane);
-    _loadAirplanes();
-  }
+    if (type.isNotEmpty && passengers != null && speed != null && range != null) {
+      final airplane = Airplane(type, passengers, speed, range);
+      await _db.airplaneDAO.insertAirplane(airplane);
+      await _loadAirplanes();
 
-  Future<void> _deleteAirplane(Airplane airplane) async {
-    await _database.airplaneDAO.deleteAirplane(airplane);
-    _loadAirplanes();
-  }
+      _typeController.clear();
+      _passengersController.clear();
+      _speedController.clear();
+      _rangeController.clear();
 
-  Future<void> _saveTextField(String text) async {
-    final prefs = await SharedPreferences.getInstance();
-    final encryptedText = encrypt.Encrypter(encrypt.AES(encrypt.Key.fromUtf8(_key)))
-        .encrypt(text, iv: encrypt.IV.fromLength(16));
-    prefs.setString('airplane_text', encryptedText.base64);
-  }
-
-  Future<void> _loadTextField() async {
-    final prefs = await SharedPreferences.getInstance();
-    final encryptedText = prefs.getString('airplane_text') ?? '';
-    if (encryptedText.isNotEmpty) {
-      final decryptedText = encrypt.Encrypter(encrypt.AES(encrypt.Key.fromUtf8(_key)))
-          .decrypt64(encryptedText, iv: encrypt.IV.fromLength(16));
-      _typeController.text = decryptedText;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Airplane added')),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('All fields are required and must have valid values.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
-  void _showSnackbar(BuildContext buildContext, String message) {
-    ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(content: Text(message)));
+  Future<void> _deleteAirplane(Airplane airplane) async {
+    await _db.airplaneDAO.deleteAirplane(airplane);
+    await _loadAirplanes();
   }
 
-  void _showAlertDialog(BuildContext buildContext, String title, String message) {
+  void _showAirplaneDetails(Airplane airplane) {
+    _typeController.text = airplane.type;
+    _passengersController.text = airplane.passengers.toString();
+    _speedController.text = airplane.speed.toString();
+    _rangeController.text = airplane.range.toString();
+
     showDialog(
-      context: buildContext,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(buildContext).pop();
-              },
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Airplane Details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _typeController,
+              decoration: InputDecoration(labelText: 'Type'),
+            ),
+            TextField(
+              controller: _passengersController,
+              decoration: InputDecoration(labelText: 'Passengers'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _speedController,
+              decoration: InputDecoration(labelText: 'Speed'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _rangeController,
+              decoration: InputDecoration(labelText: 'Range'),
+              keyboardType: TextInputType.number,
             ),
           ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _updateAirplane(airplane.id!);
+            },
+            child: Text('Update'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteAirplane(airplane);
+            },
+            child: Text('Delete'),
+          ),
+        ],
+      ),
     );
   }
 
-  void _clearForm() {
-    _typeController.clear();
-    _passengersController.clear();
-    _speedController.clear();
-    _rangeController.clear();
-    setState(() {
-      _selectedAirplane = null;
-    });
-  }
+  Future<void> _updateAirplane(int id) async {
+    final type = _typeController.text;
+    final passengers = int.tryParse(_passengersController.text);
+    final speed = int.tryParse(_speedController.text);
+    final range = int.tryParse(_rangeController.text);
 
-  void _copyPreviousData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final encryptedText = prefs.getString('airplane_text') ?? '';
-    if (encryptedText.isNotEmpty) {
-      final decryptedText = encrypt.Encrypter(encrypt.AES(encrypt.Key.fromUtf8(_key)))
-          .decrypt64(encryptedText, iv: encrypt.IV.fromLength(16));
-      _typeController.text = decryptedText;
+    if (type.isNotEmpty && passengers != null && speed != null && range != null) {
+      final airplane = Airplane(type, passengers, speed, range, id: id);
+      await _db.airplaneDAO.updateAirplane(airplane);
+      await _loadAirplanes();
+
+      _typeController.clear();
+      _passengersController.clear();
+      _speedController.clear();
+      _rangeController.clear();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Airplane updated')),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('All fields are required and must have valid values.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   @override
-  Widget build(BuildContext buildContext) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Airplanes'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.info),
-            onPressed: () {
-              _showAlertDialog(buildContext, 'Instructions', 'Instructions on how to use the interface.');
-            },
-          ),
-        ],
+        title: Text('Airplanes List'),
       ),
       body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _typeController,
-              decoration: InputDecoration(
-                labelText: 'Enter airplane type',
-              ),
-            ),
+        children: <Widget>[
+          TextField(
+            controller: _typeController,
+            decoration: InputDecoration(labelText: 'Enter airplane type'),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _passengersController,
-              decoration: InputDecoration(
-                labelText: 'Enter number of passengers',
-              ),
-              keyboardType: TextInputType.number,
-            ),
+          TextField(
+            controller: _passengersController,
+            decoration: InputDecoration(labelText: 'Enter number of passengers'),
+            keyboardType: TextInputType.number,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _speedController,
-              decoration: InputDecoration(
-                labelText: 'Enter maximum speed',
-              ),
-              keyboardType: TextInputType.number,
-            ),
+          TextField(
+            controller: _speedController,
+            decoration: InputDecoration(labelText: 'Enter maximum speed'),
+            keyboardType: TextInputType.number,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _rangeController,
-              decoration: InputDecoration(
-                labelText: 'Enter range',
-              ),
-              keyboardType: TextInputType.number,
-            ),
+          TextField(
+            controller: _rangeController,
+            decoration: InputDecoration(labelText: 'Enter range'),
+            keyboardType: TextInputType.number,
           ),
-          if (_selectedAirplane == null) ...[
-            ElevatedButton(
-              onPressed: () {
-                final type = _typeController.text;
-                final passengers = int.tryParse(_passengersController.text);
-                final speed = int.tryParse(_speedController.text);
-                final range = int.tryParse(_rangeController.text);
-
-                if (type.isNotEmpty && passengers != null && speed != null && range != null) {
-                  _addAirplane(type, passengers, speed, range);
-                  _saveTextField(type);
-                  _showSnackbar(buildContext, 'Airplane added!');
-                  _clearForm();
-                } else {
-                  _showSnackbar(buildContext, 'Please fill all fields with valid values.');
-                }
-              },
-              child: Text('Add Airplane'),
-            ),
-            ElevatedButton(
-              onPressed: _copyPreviousData,
-              child: Text('Copy Previous Data'),
-            ),
-          ] else ...[
-            ElevatedButton(
-              onPressed: () {
-                final type = _typeController.text;
-                final passengers = int.tryParse(_passengersController.text);
-                final speed = int.tryParse(_speedController.text);
-                final range = int.tryParse(_rangeController.text);
-
-                if (type.isNotEmpty && passengers != null && speed != null && range != null) {
-                  final airplane = Airplane(type, passengers, speed, range, id: _selectedAirplane!.id);
-                  _updateAirplane(airplane);
-                  _showSnackbar(buildContext, 'Airplane updated!');
-                  _clearForm();
-                } else {
-                  _showSnackbar(buildContext, 'Please fill all fields with valid values.');
-                }
-              },
-              child: Text('Update Airplane'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _deleteAirplane(_selectedAirplane!);
-                _showSnackbar(buildContext, 'Airplane deleted!');
-                _clearForm();
-              },
-              child: Text('Delete Airplane'),
-            ),
-          ],
+          ElevatedButton(
+            onPressed: _addAirplane,
+            child: Text('Add Airplane'),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: _airplanes.length,
               itemBuilder: (context, index) {
+                final airplane = _airplanes[index];
                 return ListTile(
-                  title: Text(_airplanes[index].type),
-                  subtitle: Text('Passengers: ${_airplanes[index].passengers}, Speed: ${_airplanes[index].speed} km/h, Range: ${_airplanes[index].range} km'),
-                  onTap: () {
-                    setState(() {
-                      _selectedAirplane = _airplanes[index];
-                      _typeController.text = _selectedAirplane!.type;
-                      _passengersController.text = _selectedAirplane!.passengers.toString();
-                      _speedController.text = _selectedAirplane!.speed.toString();
-                      _rangeController.text = _selectedAirplane!.range.toString();
-                    });
-                  },
+                  title: Text(airplane.type),
+                  subtitle: Text('Passengers: ${airplane.passengers}, Speed: ${airplane.speed}, Range: ${airplane.range}'),
+                  onTap: () => _showAirplaneDetails(airplane),
                 );
               },
             ),

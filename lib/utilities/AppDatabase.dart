@@ -1,15 +1,15 @@
+// lib/utilities/AppDatabase.dart
 import 'dart:async';
 import 'package:floor/floor.dart';
-import 'package:mobile_final/DAO/FlightDAO.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
-import '../modules/Customer.dart';
-import '../DAO/CustomerDAO.dart';
-import '../modules/Reservation.dart';
-import '../DAO/ReservationDAO.dart';
-import '../modules/Flight.dart';
-import '../DAO/FlightDAO.dart';
 import '../DAO/AirplaneDAO.dart';
 import '../modules/Airplane.dart';
+import '../DAO/CustomerDAO.dart';
+import '../modules/Customer.dart';
+import '../DAO/FlightDAO.dart';
+import '../modules/Flight.dart';
+import '../DAO/ReservationDAO.dart';
+import '../modules/Reservation.dart';
 
 part 'AppDatabase.g.dart';
 
