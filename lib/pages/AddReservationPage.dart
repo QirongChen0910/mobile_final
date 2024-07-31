@@ -43,8 +43,19 @@ class _AddReservationPageState extends State<AddReservationPage> {
     _controllerReservation = TextEditingController();
     _controllerDate = TextEditingController();
     _initDatabase();
-    loadSavedData();
+    _checkAndLoadSavedData();
   }
+
+  // Check if the customerName and flightName is empty, if not empty,call loadSaveData.
+  void _checkAndLoadSavedData() async {
+    String? customerName = await _encryptedPrefs.getString("customerName");
+    String? flightName = await _encryptedPrefs.getString("flightName");
+
+    if (customerName != null && flightName != null) {
+      loadSavedData();
+    }
+  }
+
 
   // Initialize database and fetch data
   Future<void> _initDatabase() async {
@@ -515,5 +526,3 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     );
   }
 }
-
-
