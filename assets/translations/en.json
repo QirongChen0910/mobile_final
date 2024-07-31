@@ -1,11 +1,9 @@
 {
-
   "customerListPage": "Customer List Page",
   "airplaneListPage": "Airplane List Page",
   "flightsListPage": "Flights List Page",
   "reservationPage": "Reservation Page",
   "welcomeMessage": "Welcome to our app!",
-
   "selectCustomer": "Select Customer",
   "selectFlight": "Select Flight",
   "enterDate": "Enter the Date you want",
@@ -16,10 +14,24 @@
   "customerName": "Customer Name",
   "flightName": "Flight Name",
   "departureCity": "Departure City",
-  "destination": "Destination",
+  "destinationCity": "Destination City",
+  "departureTime": "Departure Time",
+  "arrivalTime": "Arrival Time",
   "delete": "Delete",
   "saveDataDialogTitle": "Save Data Dialog",
   "saveDataDialogMessage": "Do you want to save data on this page?",
   "confirmDeleteMessage": "Do you want to delete this reservation?",
-  "errorTitle": "Error"
+  "errorTitle": "Error",
+  "ok": "OK",
+  "flightAdded": "Flight added",
+  "flightUpdated": "Flight updated",
+  "allFieldsRequired": "All fields are required and must have valid values.",
+  "flightDetails": "Flight Details",
+  "enterFlightName": "Enter flight name",
+  "enterDepartureCity": "Enter departure city",
+  "enterDestinationCity": "Enter destination city",
+  "enterDepartureTime": "Enter departure time",
+  "enterArrivalTime": "Enter arrival time",
+  "addFlight": "Add Flight",
+  "update": "Update"
 }

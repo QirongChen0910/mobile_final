@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import '../modules/Flight.dart';
 import '../utilities/AppDatabase.dart';
+import '../utilities/AppLocalizations.dart';
 
 class FlightsListPage extends StatefulWidget {
   @override
@@ -15,17 +18,23 @@ class _FlightsListPageState extends State<FlightsListPage> {
   final TextEditingController _departureTimeController = TextEditingController();
   final TextEditingController _arrivalTimeController = TextEditingController();
   late AppDatabase _db;
+  late EncryptedSharedPreferences _encryptedSharedPreferences;
 
   @override
   void initState() {
     super.initState();
     _initDb();
+    _initEncryptedSharedPreferences();
   }
 
   Future<void> _initDb() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
     _db = database;
     _loadFlights();
+  }
+
+  Future<void> _initEncryptedSharedPreferences() async {
+    _encryptedSharedPreferences = EncryptedSharedPreferences();
   }
 
   Future<void> _loadFlights() async {
@@ -43,8 +52,11 @@ class _FlightsListPageState extends State<FlightsListPage> {
     final departureTime = _departureTimeController.text;
     final arrivalTime = _arrivalTimeController.text;
 
-    if (flightName.isNotEmpty && departureCity.isNotEmpty && destinationCity.isNotEmpty &&
-        departureTime.isNotEmpty && arrivalTime.isNotEmpty) {
+    if (flightName.isNotEmpty &&
+        departureCity.isNotEmpty &&
+        destinationCity.isNotEmpty &&
+        departureTime.isNotEmpty &&
+        arrivalTime.isNotEmpty) {
       final flight = Flight(
         flightName,
         departureCity,
@@ -62,19 +74,21 @@ class _FlightsListPageState extends State<FlightsListPage> {
       _departureTimeController.clear();
       _arrivalTimeController.clear();
 
+      await _encryptedSharedPreferences.setString('lastFlightName', flightName);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Flight added')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.translate('flightAdded') ?? 'Flight added')),
       );
     } else {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('All fields are required and must have valid values.'),
+          title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
+          content: Text(AppLocalizations.of(context)?.translate('allFieldsRequired') ?? 'All fields are required and must have valid values.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
             ),
           ],
         ),
@@ -97,29 +111,29 @@ class _FlightsListPageState extends State<FlightsListPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Flight Details'),
+        title: Text(AppLocalizations.of(context)?.translate('flightDetails') ?? 'Flight Details'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Flight Name'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('flightName') ?? 'Flight Name'),
             ),
             TextField(
               controller: _departureController,
-              decoration: InputDecoration(labelText: 'Departure City'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('departureCity') ?? 'Departure City'),
             ),
             TextField(
               controller: _destinationController,
-              decoration: InputDecoration(labelText: 'Destination City'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('destinationCity') ?? 'Destination City'),
             ),
             TextField(
               controller: _departureTimeController,
-              decoration: InputDecoration(labelText: 'Departure Time'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('departureTime') ?? 'Departure Time'),
             ),
             TextField(
               controller: _arrivalTimeController,
-              decoration: InputDecoration(labelText: 'Arrival Time'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('arrivalTime') ?? 'Arrival Time'),
             ),
           ],
         ),
@@ -129,14 +143,14 @@ class _FlightsListPageState extends State<FlightsListPage> {
               Navigator.pop(context);
               _updateFlight(flight.flightID!);
             },
-            child: Text('Update'),
+            child: Text(AppLocalizations.of(context)?.translate('update') ?? 'Update'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _deleteFlight(flight);
             },
-            child: Text('Delete'),
+            child: Text(AppLocalizations.of(context)?.translate('delete') ?? 'Delete'),
           ),
         ],
       ),
@@ -150,8 +164,11 @@ class _FlightsListPageState extends State<FlightsListPage> {
     final departureTime = _departureTimeController.text;
     final arrivalTime = _arrivalTimeController.text;
 
-    if (flightName.isNotEmpty && departureCity.isNotEmpty && destinationCity.isNotEmpty &&
-        departureTime.isNotEmpty && arrivalTime.isNotEmpty) {
+    if (flightName.isNotEmpty &&
+        departureCity.isNotEmpty &&
+        destinationCity.isNotEmpty &&
+        departureTime.isNotEmpty &&
+        arrivalTime.isNotEmpty) {
       final flight = Flight(
         flightID: id,
         flightName,
@@ -171,18 +188,18 @@ class _FlightsListPageState extends State<FlightsListPage> {
       _arrivalTimeController.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Flight updated')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.translate('flightUpdated') ?? 'Flight updated')),
       );
     } else {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('All fields are required and must have valid values.'),
+          title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
+          content: Text(AppLocalizations.of(context)?.translate('allFieldsRequired') ?? 'All fields are required and must have valid values.'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
             ),
           ],
         ),
@@ -190,53 +207,79 @@ class _FlightsListPageState extends State<FlightsListPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flights List'),
-      ),
-      body: Column(
-        children: <Widget>[
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: 'Enter flight name'),
-          ),
-          TextField(
-            controller: _departureController,
-            decoration: InputDecoration(labelText: 'Enter departure city'),
-          ),
-          TextField(
-            controller: _destinationController,
-            decoration: InputDecoration(labelText: 'Enter destination city'),
-          ),
-          TextField(
-            controller: _departureTimeController,
-            decoration: InputDecoration(labelText: 'Enter departure time'),
-          ),
-          TextField(
-            controller: _arrivalTimeController,
-            decoration: InputDecoration(labelText: 'Enter arrival time'),
-          ),
-          ElevatedButton(
-            onPressed: _addFlight,
-            child: Text('Add Flight'),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _flights.length,
-              itemBuilder: (context, index) {
-                final flight = _flights[index];
-                return ListTile(
-                  title: Text(flight.flightName),
-                  subtitle: Text('${flight.departureCity} to ${flight.destination}'),
-                  onTap: () => _showFlightDetails(flight),
-                );
-              },
-            ),
+  void _showInstructions() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
+        content: Text(AppLocalizations.of(context)?.translate('instructionsContent') ?? 'Instructions for using the app go here.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
           ),
         ],
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)?.translate('flightsListPage') ?? 'Flights List Page'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.info),
+              onPressed: _showInstructions,
+            ),
+          ],
+        ),
+        body: Padding(
+        padding: const EdgeInsets.all(8.0),
+    child: Column(
+    children: <Widget>[
+    TextField(
+    controller: _nameController,
+    decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('enterFlightName') ?? 'Enter flight name'),
+    ),
+    TextField(
+    controller: _departureController,
+      decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('enterDepartureCity') ?? 'Enter departure city'),
+    ),
+      TextField(
+        controller: _destinationController,
+        decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('enterDestinationCity') ?? 'Enter destination city'),
+      ),
+      TextField(
+        controller: _departureTimeController,
+        decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('enterDepartureTime') ?? 'Enter departure time'),
+      ),
+      TextField(
+        controller: _arrivalTimeController,
+        decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('enterArrivalTime') ?? 'Enter arrival time'),
+      ),
+      ElevatedButton(
+        onPressed: _addFlight,
+        child: Text(AppLocalizations.of(context)?.translate('addFlight') ?? 'Add Flight'),
+      ),
+      Expanded(
+        child: ListView.builder(
+          itemCount: _flights.length,
+          itemBuilder: (context, index) {
+            final flight = _flights[index];
+            return ListTile(
+              title: Text(flight.flightName),
+              subtitle: Text('${flight.departureCity} to ${flight.destination}'),
+              onTap: () => _showFlightDetails(flight),
+            );
+          },
+        ),
+      ),
+    ],
+    ),
+        ),
+    );
+  }
 }
+
