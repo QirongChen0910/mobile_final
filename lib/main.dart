@@ -11,6 +11,9 @@ void main() {
   runApp(const MyApp());
 }
 
+/// The entry point of the application.
+///
+/// This widget sets up the app with localization support and the home page.
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -21,6 +24,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en', 'US'); // Default locale
 
+  /// Updates the locale of the application.
+  ///
+  /// [locale] The new locale to set.
   void _setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -52,9 +58,15 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+/// The home page of the application.
+///
+/// This widget displays the main screen with navigation options and localization support.
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.onLocaleChanged});
 
+  /// Callback function to handle locale changes.
+  ///
+  /// [onLocaleChanged] The function to call when the locale is changed.
   final void Function(Locale) onLocaleChanged;
 
   @override
@@ -62,6 +74,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  /// Changes the application language.
+  ///
+  /// [languageCode] The language code to set (e.g., 'en' for English, 'zh' for Chinese).
   void _changeLanguage(String languageCode) {
     Locale newLocale;
     if (languageCode == 'en') {

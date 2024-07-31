@@ -1,5 +1,5 @@
 {
-  "customerListPage": "客户列表页面",
+
   "airplaneListPage": "飞机列表页面",
   "flightsListPage": "航班列表页面",
   "reservationPage": "预订页面",
@@ -20,8 +20,6 @@
   "saveDataDialogTitle": "保存数据对话框",
   "saveDataDialogMessage": "你想保存页面上的数据吗？",
   "confirmDeleteMessage": "你想删除这个预订吗？",
-  "errorTitle": "错误",
-
 
 
   "customerListPage": "客户列表页面",
@@ -37,7 +35,6 @@
   "errorTitle": "错误",
   "allFieldsRequired": "所有字段都是必填的。",
   "customerDetails": "客户详细信息",
-
 
   "enter_airplane_type": "输入飞机型号",
   "enter_number_of_passengers": "输入乘客人数",
