@@ -33,5 +33,8 @@
   "enterDepartureTime": "Enter departure time",
   "enterArrivalTime": "Enter arrival time",
   "addFlight": "Add Flight",
-  "update": "Update"
+  "update": "Update",
+  "flightNumber": "Flight",
+  "from": "from",
+  "to": "to"
 }

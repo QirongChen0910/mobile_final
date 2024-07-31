@@ -33,5 +33,8 @@
   "enterDepartureTime": "输入出发时间",
   "enterArrivalTime": "输入到达时间",
   "addFlight": "添加航班",
-  "update": "更新"
+  "update": "更新",
+  "flightNumber": "航班",
+  "from": "从",
+  "to": "到"
 }
