@@ -4,13 +4,13 @@ import '../modules/Flight.dart';
 import '../utilities/AppDatabase.dart';
 import '../utilities/AppLocalizations.dart';
 
-
-
+/// A StatefulWidget that represents the Flights List Page.
 class FlightsListPage extends StatefulWidget {
   @override
   _FlightsListPageState createState() => _FlightsListPageState();
 }
 
+/// The state class for [FlightsListPage].
 class _FlightsListPageState extends State<FlightsListPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _departureController = TextEditingController();
@@ -29,6 +29,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
     _loadSavedData();
   }
 
+  /// Initializes the database and loads flights data.
   Future<void> _initDb() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database.db')
         .build();
@@ -36,6 +37,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
     _loadFlights();
   }
 
+  /// Loads all flights from the database.
   Future<void> _loadFlights() async {
     final data = await _db.flightDao.getAllFlights();
     setState(() {
@@ -43,6 +45,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
     });
   }
 
+  /// Adds a new flight to the database.
   Future<void> _addFlight() async {
     final flightName = _nameController.text;
     final departureCity = _departureController.text;
@@ -100,6 +103,9 @@ class _FlightsListPageState extends State<FlightsListPage> {
     }
   }
 
+  /// Deletes a flight from the database.
+  ///
+  /// [flight] is the flight to be deleted.
   Future<void> _deleteFlight(Flight flight) async {
     await _db.flightDao.deleteFlight(flight);
     _loadFlights();
@@ -110,6 +116,9 @@ class _FlightsListPageState extends State<FlightsListPage> {
     }
   }
 
+  /// Shows a confirmation dialog before deleting a flight.
+  ///
+  /// [flight] is the flight to be deleted.
   Future<void> _confirmDeleteFlight(Flight flight) async {
     showDialog(
       context: context,
@@ -133,14 +142,16 @@ class _FlightsListPageState extends State<FlightsListPage> {
                   _deleteFlight(flight);
                 },
                 child: Text(
-                    AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+                    AppLocalizations.of(context)?.translate('confirm') ?? 'Confirm'),
               ),
             ],
           ),
     );
   }
 
-
+  /// Updates a flight in the database.
+  ///
+  /// [id] is the ID of the flight to be updated.
   Future<void> _updateFlight(int id) async {
     final flightName = _nameController.text;
     final departureCity = _departureController.text;
@@ -193,6 +204,9 @@ class _FlightsListPageState extends State<FlightsListPage> {
     }
   }
 
+  /// Shows a confirmation dialog before updating a flight.
+  ///
+  /// [id] is the ID of the flight to be updated.
   Future<void> _confirmUpdateFlight(int id) async {
     showDialog(
       context: context,
@@ -223,6 +237,9 @@ class _FlightsListPageState extends State<FlightsListPage> {
     );
   }
 
+  /// Handles item tap event to display flight details.
+  ///
+  /// [flight] is the tapped flight.
   void _onItemTap(Flight flight) {
     setState(() {
       _selectedFlight = flight;
@@ -234,6 +251,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
     });
   }
 
+  /// Saves input data using encrypted shared preferences.
   void _saveData() {
     _encryptedPrefs.setString('flightName', _nameController.text);
     _encryptedPrefs.setString('departureCity', _departureController.text);
@@ -242,6 +260,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
     _encryptedPrefs.setString('arrivalTime', _arrivalTimeController.text);
   }
 
+  /// Loads saved data using encrypted shared preferences.
   void _loadSavedData() async {
     _nameController.text = await _encryptedPrefs.getString('flightName') ?? '';
     _departureController.text =
@@ -254,6 +273,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
         await _encryptedPrefs.getString('arrivalTime') ?? '';
   }
 
+  /// Clears all input fields.
   void _clearInputFields() {
     _nameController.clear();
     _departureController.clear();
@@ -270,17 +290,16 @@ class _FlightsListPageState extends State<FlightsListPage> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final isLargeScreen = constraints.maxWidth > 600;
-        return Scaffold(
+        builder: (context, constraints) {
+      final isLargeScreen = constraints.maxWidth > 600;
+      return Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme
-                .of(context)
-                .colorScheme
-                .inversePrimary,
-            title: Text(
-                AppLocalizations.of(context)?.translate('flightsListPage') ??
-                    'Flights List Page'),
+          backgroundColor: Theme
+          .of(context)
+          .colorScheme
+          .inversePrimary,
+    title: Text(
+    AppLocalizations.of(context)?.translate('flightsListPage') ?? 'Flights List Page'),
             actions: [
               OutlinedButton(
                 onPressed: () {
@@ -312,44 +331,29 @@ class _FlightsListPageState extends State<FlightsListPage> {
                 child: Text(
                     AppLocalizations.of(context)?.translate('help') ?? 'Help'),
               ),
-              // PopupMenuButton<String>(
-              //   onSelected: _changeLanguage,
-              //   itemBuilder: (BuildContext context) {
-              //     return [
-              //       PopupMenuItem(
-              //         value: 'en',
-              //         child: Text('English'),
-              //       ),
-              //       PopupMenuItem(
-              //         value: 'zh',
-              //         child: Text('中文'),
-              //       ),
-              //     ];
-              //   },
-              //   icon: Icon(Icons.g_translate),
-              // ),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: isLargeScreen
-                ? Row(
-              children: [
-                Expanded(child: _buildFlightList()),
-                VerticalDivider(),
-                if (_selectedFlight != null)
-                  Expanded(child: _buildDetailsPage(_selectedFlight!)),
-              ],
-            )
-                : _selectedFlight == null
-                ? _buildFlightList()
-                : _buildDetailsPage(_selectedFlight!),
-          ),
-        );
-      },
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: isLargeScreen
+              ? Row(
+            children: [
+              Expanded(child: _buildFlightList()),
+              VerticalDivider(),
+              if (_selectedFlight != null)
+                Expanded(child: _buildDetailsPage(_selectedFlight!)),
+            ],
+          )
+              : _selectedFlight == null
+              ? _buildFlightList()
+              : _buildDetailsPage(_selectedFlight!),
+        ),
+      );
+        },
     );
   }
 
+  /// Builds the list view of flights.
   Widget _buildFlightList() {
     return Column(
       children: <Widget>[
@@ -479,6 +483,9 @@ class _FlightsListPageState extends State<FlightsListPage> {
     );
   }
 
+  /// Builds the details page of a selected flight.
+  ///
+  /// [flight] is the selected flight.
   Widget _buildDetailsPage(Flight flight) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
