@@ -173,7 +173,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
   }
 }
 
-/// A page displaying the details of a specific customer and providing
+/// A page displaying the details of the specific customer and providing
 /// functionality to update or delete the customer.
 ///
 /// This page includes text fields for editing customer details and

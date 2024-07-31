@@ -8,7 +8,7 @@ import '../modules/Customer.dart';
 @dao
 abstract class CustomerDAO {
 
-  /// Retrieves all customers from the database.
+  /// Retrieves all customers from database.
   ///
   /// Returns a [Future] that completes with a [List] of [Customer] objects.
   @Query('SELECT * FROM Customer')
