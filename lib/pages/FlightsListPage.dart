@@ -178,14 +178,37 @@ class _FlightsListPageState extends State<FlightsListPage> {
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             title: Text(AppLocalizations.of(context)?.translate('flightsListPage') ?? 'Flights List Page'),
             actions: [
-              IconButton(
-                icon: Icon(Icons.info_outline),
+              // IconButton(
+              //   icon: Icon(Icons.info_outline),
+              //   onPressed: () {
+              //     showDialog(
+              //       context: context,
+              //       builder: (context) => AlertDialog(
+              //         title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
+              //         content: Text(AppLocalizations.of(context)?.translate('instructionsContent') ?? 'Instructions on how to use the interface.'),
+              //         actions: [
+              //           TextButton(
+              //             onPressed: () => Navigator.pop(context),
+              //             child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+              //           ),
+              //         ],
+              //       ),
+              //     );
+              //   },
+              // ),
+              OutlinedButton(
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
                       title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
-                      content: Text(AppLocalizations.of(context)?.translate('instructionsContent') ?? 'Instructions on how to use the interface.'),
+                      content: Text(
+                          AppLocalizations.of(context)?.translate('instructionsContent') ??
+                              '1. To add a flight, enter all flight details in the input fields and then click the "Add Flight" button to save the flight.\n\n'
+                                  '2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n'
+                                  '3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the "Update" button to save changes.\n\n'
+                                  '4. To delete a flight, tap on a flight in the list to view its details, click the "Delete" button, and confirm the deletion in the AlertDialog.'
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
@@ -195,6 +218,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
                     ),
                   );
                 },
+                child: Text(AppLocalizations.of(context)?.translate('help') ?? 'Help'),
               ),
             ],
           ),
@@ -279,7 +303,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
     child: TextField(
     controller: _arrivalTimeController,
     decoration: InputDecoration(
-    labelText: AppLocalizations.of(context)?.translate('enterArrivalTime') ?? 'Enter arrival time',
+    labelText: AppLocalizations.of(context)?.translate('enterArrivalTime') ?? 'Enter arrival time)',
     ),
     ),
     ),
