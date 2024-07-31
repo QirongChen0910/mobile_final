@@ -36,5 +36,27 @@
   "deleteCustomer": "删除客户",
   "errorTitle": "错误",
   "allFieldsRequired": "所有字段都是必填的。",
-  "customerDetails": "客户详细信息"
+  "customerDetails": "客户详细信息",
+
+
+  "enter_airplane_type": "输入飞机型号",
+  "enter_number_of_passengers": "输入乘客人数",
+  "enter_maximum_speed": "输入最高速度",
+  "enter_range": "输入航程",
+  "add_airplane": "添加飞机",
+  "clear": "清除",
+  "no_airplanes": "没有飞机",
+  "airplane": "飞机",
+  "with": "有",
+  "passengers": "乘客",
+  "speed": "速度",
+  "range": "航程",
+  "type": "飞机型号",
+  "airplaneAdded": "飞机已添加",
+  "airplaneUpdated": "飞机已更新",
+  "ok": "确定",
+  "fieldsCleared": "输入字段已清除",
+  "instructionsContent": "1. 要添加飞机，请在输入字段中输入所有飞机详细信息，然后点击“添加飞机”按钮以保存飞机。\n\n2. 要查看飞机列表，飞机列表将在输入字段下方显示。点击飞机以查看其详细信息。\n\n3. 要更新飞机，请点击列表中的飞机以加载其详细信息，在输入字段中修改详细信息，然后点击“更新”按钮以保存更改。\n\n4. 要删除飞机，请点击列表中的飞机以查看其详细信息，点击“删除”按钮，然后在弹出框中确认删除。",
+  "help": "帮助"
+
 }

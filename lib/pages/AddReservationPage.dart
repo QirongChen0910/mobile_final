@@ -43,7 +43,8 @@ class _AddReservationPageState extends State<AddReservationPage> {
     _controllerReservation = TextEditingController();
     _controllerDate = TextEditingController();
     _initDatabase();
-    _checkAndLoadSavedData();
+
+    //_checkAndLoadSavedData();
   }
 
   // Check if the customerName and flightName is empty, if not empty,call loadSaveData.

@@ -37,9 +37,28 @@
   "deleteCustomer": "Delete Customer",
   "errorTitle": "Error",
   "allFieldsRequired": "All fields are required.",
-  "customerDetails": "Customer Details"
+  "customerDetails": "Customer Details",
 
 
-
+  "airplaneListPage": "Airplanes List",
+  "enter_airplane_type": "Enter airplane type",
+  "enter_number_of_passengers": "Enter number of passengers",
+  "enter_maximum_speed": "Enter maximum speed",
+  "enter_range": "Enter range",
+  "add_airplane": "Add Airplane",
+  "clear": "Clear",
+  "no_airplanes": "No Airplanes",
+  "airplane": "Airplane",
+  "with": "with",
+  "passengers": "passengers",
+  "speed": "speed",
+  "range": "range",
+  "type": "Type",
+  "airplaneAdded": "Airplane added",
+  "airplaneUpdated": "Airplane updated",
+  "ok": "OK",
+  "fieldsCleared": "Input fields cleared",
+  "instructionsContent": "1. To add an airplane, enter all airplane details in the input fields and then click the \"Add Airplane\" button to save the airplane.\n\n2. To view the airplane list, the list of airplanes will display below the input fields. Tap on an airplane to view its details.\n\n3. To update an airplane, tap on an airplane in the list to load its details, modify the details in the input fields, and click the \"Update\" button to save changes.\n\n4. To delete an airplane, tap on an airplane in the list to view its details, click the \"Delete\" button, and confirm the deletion in the AlertDialog.",
+  "help": "Help"
 
 }
