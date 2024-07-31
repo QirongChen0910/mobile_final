@@ -43,7 +43,8 @@ class _AddReservationPageState extends State<AddReservationPage> {
     _controllerReservation = TextEditingController();
     _controllerDate = TextEditingController();
     _initDatabase();
-    _checkAndLoadSavedData();
+
+    //_checkAndLoadSavedData();
   }
 
   /// Check if the customerName and flightName is empty, if not empty,call loadSaveData.
@@ -60,9 +61,9 @@ class _AddReservationPageState extends State<AddReservationPage> {
   /// Initialize database and fetch data
   Future<void> _initDatabase() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-    reservationDAO = database.reservationDao;
-    customerDAO = database.customerDao;
-    flightDAO = database.flightDao;
+    reservationDAO = database.reservationDAO;
+    customerDAO = database.customerDAO;
+    flightDAO = database.flightDAO;
 
     final listOfReservations = await reservationDAO.getAllItems();
     final listOfCustomers = await customerDAO.getAllCustomers();
@@ -555,5 +556,4 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     );
   }
 }
-
 
