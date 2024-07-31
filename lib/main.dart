@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-
 import 'package:mobile_final/pages/AddReservationPage.dart';
 import 'package:mobile_final/pages/AirplaneListPage.dart';
 import 'package:mobile_final/pages/CustomerListPage.dart';
@@ -12,6 +11,9 @@ void main() {
   runApp(const MyApp());
 }
 
+/// The main application widget.
+///
+/// This widget is the root of the application and sets up the localization, theme, and navigation.
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -22,6 +24,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en', 'US'); // Default locale
 
+  /// Updates the application locale.
+  ///
+  /// [locale] The new locale to be set.
   void _setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -54,7 +59,14 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+/// The home page widget.
+///
+/// This widget displays the main screen of the application with navigation options and language change functionality.
 class MyHomePage extends StatefulWidget {
+  /// Creates an instance of `MyHomePage`.
+  ///
+  /// [title] The title to be displayed in the app bar.
+  /// [onLocaleChanged] A callback function to handle locale changes.
   const MyHomePage({super.key, required this.title, required this.onLocaleChanged});
 
   final String title;
@@ -65,6 +77,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  /// Changes the application language.
+  ///
+  /// [languageCode] The language code of the new locale to be set.
   void _changeLanguage(String languageCode) {
     Locale newLocale;
     if (languageCode == 'en') {

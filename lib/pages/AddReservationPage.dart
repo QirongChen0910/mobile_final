@@ -15,21 +15,21 @@ class AddReservationPage extends StatefulWidget {
 }
 
 class _AddReservationPageState extends State<AddReservationPage> {
-  // Controllers for text fields
+  ///Controllers for text fields
   late TextEditingController _controllerReservation;
   late TextEditingController _controllerDate;
 
-  // Lists to hold reservations, customers, and flights data
+  /// Lists to hold reservations, customers, and flights data
   List<Reservation> reservations = [];
   List<Customer> customers = [];
   List<Flight> flights = [];
 
-  // DAOs for database operations
+  /// DAOs for database operations
   late ReservationDAO reservationDAO;
   late CustomerDAO customerDAO;
   late FlightDAO flightDAO;
 
-  // Variables for selected reservation, customer, and flight
+  /// Variables for selected reservation, customer, and flight
   Reservation? selectedReservation;
   String? selectedCustomer;
   String? selectedFlight;
@@ -46,7 +46,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     _checkAndLoadSavedData();
   }
 
-  // Check if the customerName and flightName is empty, if not empty,call loadSaveData.
+  /// Check if the customerName and flightName is empty, if not empty,call loadSaveData.
   void _checkAndLoadSavedData() async {
     String? customerName = await _encryptedPrefs.getString("customerName");
     String? flightName = await _encryptedPrefs.getString("flightName");
@@ -57,7 +57,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
   }
 
 
-  // Initialize database and fetch data
+  /// Initialize database and fetch data
   Future<void> _initDatabase() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
     reservationDAO = database.reservationDao;
@@ -82,7 +82,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     super.dispose();
   }
 
-  // Add a new reservation to the database
+  /// Add a new reservation to the database
   void addReservation() async {
     if (selectedCustomer == null || selectedCustomer!.isEmpty) {
       _showErrorDialog(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error',
@@ -124,7 +124,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     });
   }
 
-  // Save the current data to encrypted shared preferences
+  /// Save the current data to encrypted shared preferences
   void saveData() {
     _encryptedPrefs.setString("customerName", selectedCustomer!);
     _encryptedPrefs.setString("flightName", selectedFlight!);
@@ -132,7 +132,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     _encryptedPrefs.setString("reservationName", _controllerReservation.value.text);
   }
 
-  // Load saved data from encrypted shared preferences
+  /// Load saved data from encrypted shared preferences
   void loadSavedData() {
     _encryptedPrefs.getString("customerName").then((customerName) {
       if (customerName != null) {
@@ -165,7 +165,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     });
   }
 
-  // Remove saved data from encrypted shared preferences
+  /// Remove saved data from encrypted shared preferences
   void removeData(){
     setState(() {
       _encryptedPrefs.remove("customerName");
@@ -179,7 +179,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     });
   }
 
-  // Show an error dialog with a title and message
+  ///Show an error dialog with a title and message
   void _showErrorDialog(String title, String message) {
     showDialog(
       context: context,
@@ -200,7 +200,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     );
   }
 
-  // Show a confirmation Snackbar before deleting a reservation
+  /// Show a confirmation Snackbar before deleting a reservation
   void showConfirmDeleteSnackBar(Reservation reservation) {
     final snackBar = SnackBar(
       content: Text(AppLocalizations.of(context)?.translate('confirmDeleteMessage') ?? 'Do you want to delete this reservation?'),
@@ -214,7 +214,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  // Show a dialog asking whether to save data
+  /// Show a dialog asking whether to save data
   void showSaveDataDialog() {
     showDialog(
       context: context,
@@ -243,6 +243,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     );
   }
 
+  ///Dialog of showing instructions.
   void showInstructionsDialog() {
     showDialog(
       context: context,
@@ -265,7 +266,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
   }
 
 
-  // Remove a reservation from the database
+  /// Remove a reservation from the database
   Future<void> removeReservation(Reservation reservation) async {
     await reservationDAO.deleteItem(reservation);
     setState(() {
@@ -325,7 +326,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
   }
 
 
-  // Widget for displaying the list of reservations and controls for adding new ones
+  /// Widget for displaying the list of reservations and controls for adding new ones
   Widget ToDoList() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -436,7 +437,7 @@ class _AddReservationPageState extends State<AddReservationPage> {
     );
   }
 
-  // Widget for displaying details of the selected reservation
+  /// Widget for displaying details of the selected reservation
   Widget DetailsPage() {
     // Find the selected flight from the list of flights
     Flight? selectedFlightDetails;
@@ -479,7 +480,7 @@ class ReservationDetailsPage extends StatefulWidget {
   final Reservation reservation;
   final FlightDAO flightDAO;
 
-  // Constructor to receive Reservation and FlightDAO instances
+  /// Constructor to receive Reservation and FlightDAO instances
   ReservationDetailsPage({required this.reservation, required this.flightDAO});
 
   @override
@@ -487,26 +488,26 @@ class ReservationDetailsPage extends StatefulWidget {
 }
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
-  // Variable to store the details of the selected flight
+  /// Variable to store the details of the selected flight
   Flight? selectedFlightDetails;
 
   @override
   void initState() {
     super.initState();
-    // Load flight details when the widget is initialized
+    /// Load flight details when the widget is initialized
     _loadFlightDetails();
   }
 
-  // Method to fetch flight details from the database
+  /// Method to fetch flight details from the database
   Future<void> _loadFlightDetails() async {
-    // Retrieve all flights from the database
+    /// Retrieve all flights from the database
     final flights = await widget.flightDAO.getAllFlights();
 
-    // Find the flight that matches the reservation's flightName
+    ///Find the flight that matches the reservation's flightName
     for (var flight in flights) {
       if (flight.flightName == widget.reservation.flightName) {
         setState(() {
-          // Update the state with the found flight details
+          /// Update the state with the found flight details
           selectedFlightDetails = flight;
         });
         break;
@@ -519,7 +520,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Title of the app bar
+        /// Title of the app bar
         title: Text(AppLocalizations.of(context)?.translate('reservationDetails') ?? 'Reservation Details'),
       ),
       body: Padding(
@@ -527,13 +528,13 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Display reservation details
+            /// Display reservation details
             Text('Reservation ID: ${widget.reservation.reservationID}'),
             Text('${AppLocalizations.of(context)?.translate('reservationName') ?? 'Reservation Name'} : ${widget.reservation.reservationName}'),
             Text('${AppLocalizations.of(context)?.translate('customerName') ?? 'Customer Name'} : ${widget.reservation.customerName}'),
             Text('${AppLocalizations.of(context)?.translate('flightName') ?? 'Flight Name'} : ${widget.reservation.flightName}'),
 
-            // Display flight details if available
+            /// Display flight details if available
             if (selectedFlightDetails != null) ...[
               Text('${AppLocalizations.of(context)?.translate('departureCity') ?? 'Departure City'} : ${selectedFlightDetails!.departureCity}'),
               Text('${AppLocalizations.of(context)?.translate('destination') ?? 'Destination'} : ${selectedFlightDetails!.destination}'),
@@ -541,7 +542,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
 
             SizedBox(height: 20),
 
-            // Button to navigate back to the previous screen
+            /// Button to navigate back to the previous screen
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
