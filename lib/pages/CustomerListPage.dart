@@ -4,6 +4,12 @@ import 'package:mobile_final/modules/Customer.dart';
 import 'package:mobile_final/utilities/AppDatabase.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 
+/// A page displaying a list of customers and providing functionality
+/// to add new customers.
+///
+/// This page includes text fields for entering customer details and
+/// a list view for displaying existing customers. It also handles
+/// loading and storing previous data using encrypted shared preferences.
 class CustomerListPage extends StatefulWidget {
   @override
   _CustomerListPageState createState() => _CustomerListPageState();
@@ -25,6 +31,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     _initDb();
   }
 
+  /// Initializes the database and loads customer data.
   Future<void> _initDb() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
     _customerDAO = database.customerDao;
@@ -32,6 +39,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     _loadPreviousData();
   }
 
+  /// Loads all customers from the database and updates the state.
   Future<void> _loadCustomers() async {
     final customers = await _customerDAO.getAllCustomers();
     setState(() {
@@ -39,6 +47,8 @@ class _CustomerListPageState extends State<CustomerListPage> {
     });
   }
 
+  /// Loads previously stored data from encrypted shared preferences
+  /// and populates the text fields.
   Future<void> _loadPreviousData() async {
     final prefs = await _prefs.getInstance();
     _firstNameController.text = prefs.getString('previousCustomerFirstName') ?? '';
@@ -47,6 +57,11 @@ class _CustomerListPageState extends State<CustomerListPage> {
     _birthdayController.text = prefs.getString('previousCustomerBirthday') ?? '';
   }
 
+  /// Adds a new customer to the database.
+  ///
+  /// This method checks if all fields are filled, then inserts a new
+  /// customer record into the database. After insertion, it clears
+  /// the text fields and reloads the customer list.
   Future<void> _addCustomer() async {
     final firstName = _firstNameController.text;
     final lastName = _lastNameController.text;
@@ -68,6 +83,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     _loadCustomers();
   }
 
+  /// Displays an alert dialog with the specified [title] and [message].
   void _showAlertDialog(String title, String message) {
     showDialog(
       context: context,
@@ -157,6 +173,11 @@ class _CustomerListPageState extends State<CustomerListPage> {
   }
 }
 
+/// A page displaying the details of the specific customer and providing
+/// functionality to update or delete the customer.
+///
+/// This page includes text fields for editing customer details and
+/// buttons for updating or deleting the customer record.
 class CustomerDetailsPage extends StatelessWidget {
   final Customer customer;
   final CustomerDAO customerDao;

@@ -30,7 +30,7 @@
 
   "customerListPage": "Customer List Page",
   "instructions": "Instructions",
-  "instructionsMessage": "This is the customer list page. You can add, view, update, and delete customers.",
+  "instructionsMessage": "This is the customer list page. You can add, view, update, and delete customers!",
   "firstName": "First Name",
   "lastName": "Last Name",
   "address": "Address",
