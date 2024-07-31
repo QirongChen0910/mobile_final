@@ -11,9 +11,6 @@ void main() {
   runApp(const MyApp());
 }
 
-/// The main application widget.
-///
-/// This widget is the root of the application and sets up the localization, theme, and navigation.
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -24,9 +21,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en', 'US'); // Default locale
 
-  /// Updates the application locale.
-  ///
-  /// [locale] The new locale to be set.
   void _setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -52,24 +46,15 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: MyHomePage(
-        title: 'Application Home Page',
         onLocaleChanged: _setLocale,
       ),
     );
   }
 }
 
-/// The home page widget.
-///
-/// This widget displays the main screen of the application with navigation options and language change functionality.
 class MyHomePage extends StatefulWidget {
-  /// Creates an instance of `MyHomePage`.
-  ///
-  /// [title] The title to be displayed in the app bar.
-  /// [onLocaleChanged] A callback function to handle locale changes.
-  const MyHomePage({super.key, required this.title, required this.onLocaleChanged});
+  const MyHomePage({super.key, required this.onLocaleChanged});
 
-  final String title;
   final void Function(Locale) onLocaleChanged;
 
   @override
@@ -77,9 +62,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  /// Changes the application language.
-  ///
-  /// [languageCode] The language code of the new locale to be set.
   void _changeLanguage(String languageCode) {
     Locale newLocale;
     if (languageCode == 'en') {
@@ -99,66 +81,88 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(localizations?.translate('applicationHomePage') ?? 'Application Home Page'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 21.0), // Adjust the value to move it left
+            child: PopupMenuButton<String>(
+              onSelected: _changeLanguage,
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem(
+                    value: 'en',
+                    child: Text('English'),
+                  ),
+                  PopupMenuItem(
+                    value: 'zh',
+                    child: Text('中文'),
+                  ),
+                ];
+              },
+              icon: Icon(Icons.g_translate),
+            ),
+          ),
+        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CustomerListPage()),
-                );
-              },
-              child: Text(localizations?.translate('customerListPage') ?? 'Customer List Page'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AirplaneListPage()),
-                );
-              },
-              child: Text(localizations?.translate('airplaneListPage') ?? 'Airplane List Page'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FlightsListPage()),
-                );
-              },
-              child: Text(localizations?.translate('flightsListPage') ?? 'Flights List Page'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddReservationPage()),
-                );
-              },
-              child: Text(localizations?.translate('reservationPage') ?? 'Reservation Page'),
-            ),
-            Text(
-              localizations?.translate('welcomeMessage') ?? 'Welcome to our app!',
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _changeLanguage('en'),
-                  child: const Text('English'),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () => _changeLanguage('zh'),
-                  child: const Text('中文'),
-                ),
-              ],
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                localizations?.translate('welcomeMessage') ?? 'Welcome to our app!',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 10),
+              Text(
+                localizations?.translate('exploreSections') ?? 'Explore the different sections of our application using the buttons below.',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CustomerListPage()),
+                  );
+                },
+                child: Text(localizations?.translate('customerListPage') ?? 'Customer List Page'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AirplaneListPage()),
+                  );
+                },
+                child: Text(localizations?.translate('airplaneListPage') ?? 'Airplane List Page'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FlightsListPage()),
+                  );
+                },
+                child: Text(localizations?.translate('flightsListPage') ?? 'Flights List Page'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddReservationPage()),
+                  );
+                },
+                child: Text(localizations?.translate('reservationPage') ?? 'Reservation Page'),
+              ),
+            ],
+          ),
         ),
       ),
     );
