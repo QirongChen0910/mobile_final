@@ -21,6 +21,8 @@
   "saveDataDialogMessage": "你想保存页面上的数据吗？",
   "confirmDeleteMessage": "你想删除这个预订吗？",
   "errorTitle": "错误",
+  "reservationInstruction": "1.选择顾客；2.选择航班；3.填写日期；4.填写预定名；5.点击添加按钮",
+  "reservationInsTitle": "预定页面使用教程",
 
 
 
