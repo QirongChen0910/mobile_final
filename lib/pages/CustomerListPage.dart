@@ -5,6 +5,19 @@ import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:mobile_final/utilities/AppLocalizations.dart';
 import 'package:flutter/services.dart';  // Import this package for TextInputFormatter
 
+/// A page that displays a list of customers and allows adding, updating,
+/// deleting, and viewing customer details.
+///
+/// The page supports input validation and saves input data securely using
+/// [EncryptedSharedPreferences]. It adapts its layout based on screen size.
+///
+/// The page is designed to work with [AppDatabase] and [Customer] models.
+///
+/// The layout adjusts to display a detailed view of a selected customer
+/// side-by-side with the list of customers on larger screens, and on top
+/// of the list on smaller screens.
+///
+/// This page also supports bilingual (Chinese and English) text localization.
 class CustomerListPage extends StatefulWidget {
   @override
   _CustomerListPageState createState() => _CustomerListPageState();
@@ -27,12 +40,14 @@ class _CustomerListPageState extends State<CustomerListPage> {
     _loadSavedData();
   }
 
+  /// Initializes the database and loads the list of customers.
   Future<void> _initDb() async {
     final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
     _db = database;
     _loadCustomers();
   }
 
+  /// Loads the list of customers from the database.
   Future<void> _loadCustomers() async {
     final data = await _db.customerDAO.getAllCustomers();
     setState(() {
@@ -40,6 +55,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     });
   }
 
+  /// Adds a new customer to the database if all input fields are valid.
   Future<void> _addCustomer() async {
     final firstName = _firstNameController.text;
     final lastName = _lastNameController.text;
@@ -60,6 +76,8 @@ class _CustomerListPageState extends State<CustomerListPage> {
     }
   }
 
+  /// Updates the details of the selected customer in the database if all
+  /// input fields are valid.
   Future<void> _updateCustomer(int id) async {
     final firstName = _firstNameController.text;
     final lastName = _lastNameController.text;
@@ -79,6 +97,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     }
   }
 
+  /// Deletes the specified customer from the database.
   Future<void> _deleteCustomer(Customer customer) async {
     await _db.customerDAO.deleteCustomer(customer);
     _loadCustomers();
@@ -89,6 +108,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     }
   }
 
+  /// Updates the input fields with the selected customer's details.
   void _onItemTap(Customer customer) {
     setState(() {
       _selectedCustomer = customer;
@@ -99,6 +119,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     });
   }
 
+  /// Saves the current input data to secure preferences.
   void _saveData() {
     _encryptedPrefs.setString('firstName', _firstNameController.text);
     _encryptedPrefs.setString('lastName', _lastNameController.text);
@@ -106,6 +127,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     _encryptedPrefs.setString('birthday', _birthdayController.text);
   }
 
+  /// Loads saved input data from secure preferences.
   void _loadSavedData() async {
     _firstNameController.text = await _encryptedPrefs.getString('firstName') ?? '';
     _lastNameController.text = await _encryptedPrefs.getString('lastName') ?? '';
@@ -113,6 +135,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     _birthdayController.text = await _encryptedPrefs.getString('birthday') ?? '';
   }
 
+  /// Clears all input fields and displays a Snackbar notification.
   void _clearInputFields() {
     _firstNameController.clear();
     _lastNameController.clear();
@@ -123,6 +146,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     );
   }
 
+  /// Validates the birthday input to ensure it contains only numbers.
   void _validateBirthdayInput(String value) {
     final regex = RegExp(r'^[0-9]*$');
     if (!regex.hasMatch(value)) {
@@ -131,12 +155,13 @@ class _CustomerListPageState extends State<CustomerListPage> {
     }
   }
 
-  void _showErrorDialog({String errorMessage = 'All fields are required.'}) {
+  /// Displays an error dialog with the provided error message.
+  void _showErrorDialog({errorMessage = 'All fields are required.'}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
-        content: Text(errorMessage),
+        content: Text(AppLocalizations.of(context)?.translate('allFieldsRequired') ?? 'All fields are required and must have valid values.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -199,6 +224,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     );
   }
 
+  /// Builds the customer list including input fields and action buttons.
   Widget _buildCustomerList() {
     return Column(
       children: <Widget>[
@@ -315,6 +341,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     );
   }
 
+  /// Builds the details page for a selected customer.
   Widget _buildDetailsPage(Customer customer) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
