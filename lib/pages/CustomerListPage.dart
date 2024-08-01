@@ -3,6 +3,7 @@ import 'package:mobile_final/DAO/CustomerDAO.dart';
 import 'package:mobile_final/modules/Customer.dart';
 import 'package:mobile_final/utilities/AppDatabase.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:mobile_final/utilities/AppLocalizations.dart';
 
 /// A page displaying a list of customers and providing functionality
 /// to add new customers.
@@ -69,7 +70,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     final birthday = _birthdayController.text;
 
     if (firstName.isEmpty || lastName.isEmpty || address.isEmpty || birthday.isEmpty) {
-      _showAlertDialog('Error', 'All fields must be filled.');
+      _showAlertDialog(AppLocalizations.of(context)?.translate('error') ?? 'Error', AppLocalizations.of(context)?.translate('allFieldsMustBeFilled') ?? 'All fields must be filled.');
       return;
     }
 
@@ -93,7 +94,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
+            child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
           ),
         ],
       ),
@@ -104,12 +105,12 @@ class _CustomerListPageState extends State<CustomerListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Customer List'),
+        title: Text(AppLocalizations.of(context)?.translate('customerList') ?? 'Customer List'),
         actions: [
           IconButton(
             icon: Icon(Icons.info),
             onPressed: () {
-              _showAlertDialog('Instructions', 'This is the customer list page. You can add, view, update, and delete customers.');
+              _showAlertDialog(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions', AppLocalizations.of(context)?.translate('instructionsMessage') ?? 'This is the customer list page. You can add, view, update, and delete customers.');
             },
           ),
         ],
@@ -122,24 +123,24 @@ class _CustomerListPageState extends State<CustomerListPage> {
               children: [
                 TextField(
                   controller: _firstNameController,
-                  decoration: InputDecoration(labelText: 'First Name'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('firstName') ?? 'First Name'),
                 ),
                 TextField(
                   controller: _lastNameController,
-                  decoration: InputDecoration(labelText: 'Last Name'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('lastName') ?? 'Last Name'),
                 ),
                 TextField(
                   controller: _addressController,
-                  decoration: InputDecoration(labelText: 'Address'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('address') ?? 'Address'),
                 ),
                 TextField(
                   controller: _birthdayController,
-                  decoration: InputDecoration(labelText: 'Birthday'),
+                  decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('birthday') ?? 'Birthday'),
                 ),
                 SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _addCustomer,
-                  child: Text('Add Customer'),
+                  child: Text(AppLocalizations.of(context)?.translate('addCustomer') ?? 'Add Customer'),
                 ),
               ],
             ),
@@ -198,7 +199,7 @@ class CustomerDetailsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Customer Details'),
+        title: Text(AppLocalizations.of(context)?.translate('customerDetails') ?? 'Customer Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -206,19 +207,19 @@ class CustomerDetailsPage extends StatelessWidget {
           children: [
             TextField(
               controller: firstNameController,
-              decoration: InputDecoration(labelText: 'First Name'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('firstName') ?? 'First Name'),
             ),
             TextField(
               controller: lastNameController,
-              decoration: InputDecoration(labelText: 'Last Name'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('lastName') ?? 'Last Name'),
             ),
             TextField(
               controller: addressController,
-              decoration: InputDecoration(labelText: 'Address'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('address') ?? 'Address'),
             ),
             TextField(
               controller: birthdayController,
-              decoration: InputDecoration(labelText: 'Birthday'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)?.translate('birthday') ?? 'Birthday'),
             ),
             SizedBox(height: 16),
             Row(
@@ -237,7 +238,7 @@ class CustomerDetailsPage extends StatelessWidget {
                     onUpdate();
                     Navigator.of(context).pop();
                   },
-                  child: Text('Update'),
+                  child: Text(AppLocalizations.of(context)?.translate('update') ?? 'Update'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -245,7 +246,7 @@ class CustomerDetailsPage extends StatelessWidget {
                     onUpdate();
                     Navigator.of(context).pop();
                   },
-                  child: Text('Delete'),
+                  child: Text(AppLocalizations.of(context)?.translate('delete') ?? 'Delete'),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
               ],
