@@ -37,14 +37,6 @@ class _CustomerListPageState extends State<CustomerListPage> {
     final data = await _db.customerDAO.getAllCustomers();
     setState(() {
       _customers = data;
-      // Display the last record's information if available
-      if (_customers.isNotEmpty) {
-        final lastCustomer = _customers.last;
-        _firstNameController.text = lastCustomer.firstName;
-        _lastNameController.text = lastCustomer.lastName;
-        _addressController.text = lastCustomer.address;
-        _birthdayController.text = lastCustomer.birthday;
-      }
     });
   }
 
@@ -58,31 +50,13 @@ class _CustomerListPageState extends State<CustomerListPage> {
       final customer = Customer(firstName, lastName, address, birthday);
       await _db.customerDAO.insertCustomer(customer);
       _loadCustomers();
-
       _saveData();
-
-      _firstNameController.clear();
-      _lastNameController.clear();
-      _addressController.clear();
-      _birthdayController.clear();
-
+      _clearInputFields();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)?.translate('customerAdded') ?? 'Customer added')),
       );
     } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
-          content: Text(AppLocalizations.of(context)?.translate('allFieldsRequired') ?? 'All fields are required.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
-            ),
-          ],
-        ),
-      );
+      _showErrorDialog();
     }
   }
 
@@ -96,26 +70,12 @@ class _CustomerListPageState extends State<CustomerListPage> {
       final customer = Customer(firstName, lastName, address, birthday, customerID: id);
       await _db.customerDAO.updateCustomer(customer);
       _loadCustomers();
-
       _saveData();
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)?.translate('customerUpdated') ?? 'Customer updated')),
       );
     } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
-          content: Text(AppLocalizations.of(context)?.translate('allFieldsRequired') ?? 'All fields are required.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
-            ),
-          ],
-        ),
-      );
+      _showErrorDialog();
     }
   }
 
@@ -164,167 +124,213 @@ class _CustomerListPageState extends State<CustomerListPage> {
   }
 
   void _validateBirthdayInput(String value) {
-    // Check if the input contains any non-numeric characters
     final regex = RegExp(r'^[0-9]*$');
     if (!regex.hasMatch(value)) {
-      // Show alert if invalid input
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
-          content: Text(AppLocalizations.of(context)?.translate('invalidBirthday') ?? 'Invalid birthday format. Please enter numbers only.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
-            ),
-          ],
-        ),
-      );
-      // Clear the invalid input
+      _showErrorDialog(errorMessage: AppLocalizations.of(context)?.translate('invalidBirthday') ?? 'Invalid birthday format. Please enter numbers only.');
       _birthdayController.clear();
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(AppLocalizations.of(context)?.translate('customerListPage') ?? 'Customers List'),
+  void _showErrorDialog({String errorMessage = 'All fields are required.'}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)?.translate('errorTitle') ?? 'Error'),
+        content: Text(errorMessage),
         actions: [
-          OutlinedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
-                  content: Text(
-                      AppLocalizations.of(context)?.translate('instructionsMessage') ??
-                          ''
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
-                    ),
-                  ],
-                ),
-              );
-            },
-            child: Text(AppLocalizations.of(context)?.translate('help') ?? 'Help'),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _firstNameController,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)?.translate('firstName') ?? 'Enter first name',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isLargeScreen = constraints.maxWidth > 600;
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(AppLocalizations.of(context)?.translate('customerListPage') ?? 'Customers List'),
+            actions: [
+              OutlinedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
+                      content: Text(
+                          AppLocalizations.of(context)?.translate('instructionsMessage') ?? ''
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _lastNameController,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)?.translate('lastName') ?? 'Enter last name',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _addressController,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)?.translate('address') ?? 'Enter address',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    controller: _birthdayController,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)?.translate('birthday') ?? 'Enter birthday',
-                    ),
-                    keyboardType: TextInputType.number, // Ensure only numeric keyboard is shown
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly, // Allow only digits
-                      LengthLimitingTextInputFormatter(10), // Optional: Limit length to 10
-                    ],
-                    onChanged: _validateBirthdayInput, // Validate on input change
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _addCustomer,
-                    child: Text(AppLocalizations.of(context)?.translate('addCustomer') ?? 'Add Customer'),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_selectedCustomer != null) {
-                        _updateCustomer(_selectedCustomer!.customerID!);
-                      }
-                    },
-                    child: Text(AppLocalizations.of(context)?.translate('update') ?? 'Update Customer'),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_selectedCustomer != null) {
-                        _deleteCustomer(_selectedCustomer!);
-                      }
-                    },
-                    child: Text(AppLocalizations.of(context)?.translate('deleteCustomer') ?? 'Delete Customer'),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _customers.length,
-                itemBuilder: (context, index) {
-                  final customer = _customers[index];
-                  return ListTile(
-                    title: Text('${customer.firstName} ${customer.lastName}'),
-                    onTap: () => _onItemTap(customer),
                   );
                 },
+                child: Text(AppLocalizations.of(context)?.translate('help') ?? 'Help'),
+              ),
+            ],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: isLargeScreen
+                ? Row(
+              children: [
+                Expanded(child: _buildCustomerList()),
+                VerticalDivider(),
+                if (_selectedCustomer != null)
+                  Expanded(child: _buildDetailsPage(_selectedCustomer!)),
+              ],
+            )
+                : _selectedCustomer == null
+                ? _buildCustomerList()
+                : _buildDetailsPage(_selectedCustomer!),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCustomerList() {
+    return Column(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _firstNameController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate('firstName') ?? 'Enter first name',
+                ),
               ),
             ),
           ],
         ),
+        SizedBox(height: 8),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _lastNameController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate('lastName') ?? 'Enter last name',
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _addressController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate('address') ?? 'Enter address',
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                controller: _birthdayController,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)?.translate('birthday') ?? 'Enter birthday',
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                onChanged: _validateBirthdayInput,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _addCustomer,
+                child: Text(AppLocalizations.of(context)?.translate('addCustomer') ?? 'Add Customer'),
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_selectedCustomer != null) {
+                    _updateCustomer(_selectedCustomer!.customerID!);
+                  }
+                },
+                child: Text(AppLocalizations.of(context)?.translate('update') ?? 'Update Customer'),
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_selectedCustomer != null) {
+                    _deleteCustomer(_selectedCustomer!);
+                  }
+                },
+                child: Text(AppLocalizations.of(context)?.translate('delete') ?? 'Delete Customer'),
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _clearInputFields,
+                child: Text(AppLocalizations.of(context)?.translate('clear') ?? 'Clear'),
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _customers.length,
+            itemBuilder: (context, index) {
+              final customer = _customers[index];
+              return ListTile(
+                title: Text('${customer.firstName} ${customer.lastName}'),
+                onTap: () => _onItemTap(customer),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailsPage(Customer customer) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(AppLocalizations.of(context)?.translate('details') ?? 'Customer Details', style: Theme.of(context).textTheme.headline6),
+          SizedBox(height: 16),
+          Text('${AppLocalizations.of(context)?.translate('firstName') ?? 'First Name'}: ${customer.firstName}'),
+          SizedBox(height: 8),
+          Text('${AppLocalizations.of(context)?.translate('lastName') ?? 'Last Name'}: ${customer.lastName}'),
+          SizedBox(height: 8),
+          Text('${AppLocalizations.of(context)?.translate('address') ?? 'Address'}: ${customer.address}'),
+          SizedBox(height: 8),
+          Text('${AppLocalizations.of(context)?.translate('birthday') ?? 'Birthday'}: ${customer.birthday}'),
+        ],
       ),
     );
   }
