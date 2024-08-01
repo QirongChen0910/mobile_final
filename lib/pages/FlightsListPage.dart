@@ -6,6 +6,10 @@ import '../utilities/AppLocalizations.dart';
 
 /// A StatefulWidget that represents the Flights List Page.
 class FlightsListPage extends StatefulWidget {
+  final Function(Locale) onLocaleChanged;
+
+  FlightsListPage({Key? key, required this.onLocaleChanged}) : super(key: key);
+
   @override
   _FlightsListPageState createState() => _FlightsListPageState();
 }
@@ -243,6 +247,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
     );
   }
 
+
   /// Handles item tap event to display flight details.
   ///
   /// [flight] is the tapped flight.
@@ -293,45 +298,70 @@ class _FlightsListPageState extends State<FlightsListPage> {
     );
   }
 
+  /// Add a language support.
+  void _changeLanguage(String languageCode) {
+    Locale newLocale;
+    if (languageCode == 'en') {
+      newLocale = const Locale('en', 'US');
+    } else if (languageCode == 'zh') {
+      newLocale = const Locale('zh', 'CN');
+    } else {
+      newLocale = const Locale('en', 'US'); // Default to English
+    }
+    widget.onLocaleChanged(newLocale);
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-        builder: (context, constraints) {
-      final isLargeScreen = constraints.maxWidth > 600;
-      return Scaffold(
+      builder: (context, constraints) {
+        final isLargeScreen = constraints.maxWidth > 600;
+        return Scaffold(
           appBar: AppBar(
-          backgroundColor: Theme
-          .of(context)
-          .colorScheme
-          .inversePrimary,
-    title: Text(
-    AppLocalizations.of(context)?.translate('flightsListPage') ?? 'Flights List Page'),
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .inversePrimary,
+            title: Text(
+                AppLocalizations.of(context)?.translate('flightsListPage') ?? 'Flights List Page'),
             actions: [
+            PopupMenuButton<String>(
+              onSelected: _changeLanguage,
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem(
+                    value: 'en',
+                    child: Text('English'),
+                  ),
+                  PopupMenuItem(
+                    value: 'zh',
+                    child: Text('中文'),
+                  ),
+                ];
+              },
+              icon: Icon(Icons.g_translate),
+            ),
               OutlinedButton(
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context) =>
-                        AlertDialog(
-                          title: Text(AppLocalizations.of(context)?.translate(
-                              'instructions') ?? 'Instructions'),
-                          content: Text(
-                              AppLocalizations.of(context)?.translate(
-                                  'flightInstructions') ??
-                                  '1. To add a flight, enter all flight details in the input fields and then click the "Add Flight" button to save the flight.\n\n'
-                                      '2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n'
-                                      '3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the "Update" button to save changes.\n\n'
-                                      '4. To delete a flight, tap on a flight in the list to view its details, click the "Delete" button, and confirm the deletion in the AlertDialog.'
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(
-                                  AppLocalizations.of(context)?.translate(
-                                      'ok') ?? 'OK'),
-                            ),
-                          ],
+                    builder: (context) => AlertDialog(
+                      title: Text(AppLocalizations.of(context)?.translate('instructions') ?? 'Instructions'),
+                      content: Text(
+                          AppLocalizations.of(context)?.translate('flightInstructions') ??
+                              '1. To add a flight, enter all flight details in the input fields and then click the "Add Flight" button to save the flight.\n\n'
+                                  '2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n'
+                                  '3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the "Update" button to save changes.\n\n'
+                                  '4. To delete a flight, tap on a flight in the list to view its details, click the "Delete" button, and confirm the deletion in the AlertDialog.'
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                              AppLocalizations.of(context)?.translate('ok') ?? 'OK'),
                         ),
+                      ],
+                    ),
                   );
                 },
                 child: Text(
@@ -339,23 +369,23 @@ class _FlightsListPageState extends State<FlightsListPage> {
               ),
             ],
           ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: isLargeScreen
-              ? Row(
-            children: [
-              Expanded(child: _buildFlightList()),
-              VerticalDivider(),
-              if (_selectedFlight != null)
-                Expanded(child: _buildDetailsPage(_selectedFlight!)),
-            ],
-          )
-              : _selectedFlight == null
-              ? _buildFlightList()
-              : _buildDetailsPage(_selectedFlight!),
-        ),
-      );
-        },
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: isLargeScreen
+                ? Row(
+              children: [
+                Expanded(child: _buildFlightList()),
+                VerticalDivider(),
+                if (_selectedFlight != null)
+                  Expanded(child: _buildDetailsPage(_selectedFlight!)),
+              ],
+            )
+                : _selectedFlight == null
+                ? _buildFlightList()
+                : _buildDetailsPage(_selectedFlight!),
+          ),
+        );
+      },
     );
   }
 
@@ -549,3 +579,5 @@ class _FlightsListPageState extends State<FlightsListPage> {
     );
   }
 }
+
+

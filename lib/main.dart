@@ -40,7 +40,6 @@ class _MyAppState extends State<MyApp> {
         Locale('en', 'US'),
         Locale('zh', 'CN'),
       ],
-      locale: _locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -51,6 +50,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      locale: _locale,
       home: MyHomePage(
         onLocaleChanged: _setLocale,
       ),
@@ -161,7 +161,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => FlightsListPage()),
+                    MaterialPageRoute(builder: (context) =>
+                        FlightsListPage(onLocaleChanged: widget.onLocaleChanged),
+                    ),
                   );
                 },
                 child: Text(localizations?.translate('flightsListPage') ?? 'Flights List Page'),
