@@ -114,6 +114,11 @@ class _FlightsListPageState extends State<FlightsListPage> {
         _selectedFlight = null;
       });
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(
+          AppLocalizations.of(context)?.translate('flightDeleted') ??
+              'Flight Deleted')),
+    );
   }
 
   /// Shows a confirmation dialog before deleting a flight.
@@ -203,6 +208,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
       );
     }
   }
+
 
   /// Shows a confirmation dialog before updating a flight.
   ///
@@ -311,7 +317,7 @@ class _FlightsListPageState extends State<FlightsListPage> {
                               'instructions') ?? 'Instructions'),
                           content: Text(
                               AppLocalizations.of(context)?.translate(
-                                  'instructionsContent') ??
+                                  'flightInstructions') ??
                                   '1. To add a flight, enter all flight details in the input fields and then click the "Add Flight" button to save the flight.\n\n'
                                       '2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n'
                                       '3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the "Update" button to save changes.\n\n'

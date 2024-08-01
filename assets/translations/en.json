@@ -1,12 +1,12 @@
 {
-
+  "welcomeMessage": "Welcome to our app!",
+  "exploreSections": "Explore the different sections of our application using the buttons below.",
+  "applicationHomePage": "Application Home Page",
+  "customerListPage": "Customer List Page",
   "airplaneListPage": "Airplane List Page",
   "flightsListPage": "Flights List Page",
   "reservationPage": "Reservation Page",
-  "welcomeMessage": "Welcome to our app!",
 
-
-  "customerListPage": "Customer List Page",
   "instructions": "Instructions",
   "instructionsMessage": "This is the customer list page. You can add, view, update, and delete customers!",
   "firstName": "First Name",
@@ -17,8 +17,29 @@
   "update": "Update",
   "deleteCustomer": "Delete Customer",
   "errorTitle": "Error",
-  "allFieldsRequired": "All fields are required.",
   "customerDetails": "Customer Details",
+
+  "flightAdded": "Flight added",
+  "flightUpdated": "Flight updated",
+  "allFieldsRequired": "All fields are required and must have valid values.",
+  "flightDetails": "Flight Details",
+  "enterFlightName": "Enter flight name",
+  "enterDepartureCity": "Enter departure city",
+  "enterDestinationCity": "Enter destination city",
+  "enterDepartureTime": "Enter departure time",
+  "enterArrivalTime": "Enter arrival time",
+  "addFlight": "Add Flight",
+  "flightNumber": "Flight",
+  "flightDeleted": "Flight Deleted",
+
+  "confirmUpdate": "Confirm Update",
+  "confirmUpdateContent": "Are you sure you want to update this flight?",
+  "confirmDelete": "Confirm Delete",
+  "confirmDeleteContent": "Are you sure you want to delete this flight?",
+  "destinationCity": "Destination City",
+  "departureTime": "Departure Time",
+  "arrivalTime": "Arrival Time",
+
 
   "selectCustomer": "Select Customer",
   "selectFlight": "Select Flight",
@@ -35,7 +56,10 @@
   "saveDataDialogTitle": "Save Data Dialog",
   "saveDataDialogMessage": "Do you want to save data on this page?",
   "confirmDeleteMessage": "Do you want to delete this reservation?",
-
+  "from": "from",
+  "to": "to",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
 
   "enter_airplane_type": "Enter airplane type",
   "enter_number_of_passengers": "Enter number of passengers",
@@ -55,6 +79,6 @@
   "ok": "OK",
   "fieldsCleared": "Input fields cleared",
   "instructionsContent": "1. To add an airplane, enter all airplane details in the input fields and then click the \"Add Airplane\" button to save the airplane.\n\n2. To view the airplane list, the list of airplanes will display below the input fields. Tap on an airplane to view its details.\n\n3. To update an airplane, tap on an airplane in the list to load its details, modify the details in the input fields, and click the \"Update\" button to save changes.\n\n4. To delete an airplane, tap on an airplane in the list to view its details, click the \"Delete\" button, and confirm the deletion in the AlertDialog.",
-  "help": "Help"
-
+  "help": "Help",
+  "flightInstructions": "1. To add a flight, enter all flight details in the input fields and then click the \"Add Flight\" button to save the flight.\n\n2. To view the flight list, the list of flights will display below the input fields. Tap on a flight to view its details.\n\n3. To update a flight, tap on a flight in the list to load its details, modify the details in the input fields, and click the Update button to save changes.\n\n4. To delete a flight, tap on a flight in the list to view its details, click the Delete button, and confirm the deletion in the AlertDialog."
 }
