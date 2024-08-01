@@ -14,10 +14,14 @@
   "address": "地址",
   "birthday": "生日",
   "addCustomer": "添加客户",
-  "update": "更新",
+  "update": "更新客户",
   "deleteCustomer": "删除客户",
   "errorTitle": "错误",
   "customerDetails": "客户详情",
+  "customerAdded": "添加成功",
+  "customerUpdated": "更新成功",
+
+
 
   "flightAdded": "航班已添加",
   "flightUpdated": "航班已更新",
