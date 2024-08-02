@@ -119,6 +119,7 @@ class _CustomerListPageState extends State<CustomerListPage> {
     });
   }
 
+
   /// Saves the current input data to secure preferences.
   void _saveData() {
     _encryptedPrefs.setString('firstName', _firstNameController.text);
